@@ -13,10 +13,10 @@ import '@vben/styles/naive';
 
 import { useTitle } from '@vueuse/core';
 
+import App from '#/app.vue';
 import { $t, setupI18n } from '#/locales';
 
 import { initComponentAdapter } from './adapter/component';
-import App from './app.vue';
 import { router } from './router';
 
 async function bootstrap(namespace: string) {
