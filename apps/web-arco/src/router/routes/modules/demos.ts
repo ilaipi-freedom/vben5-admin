@@ -15,11 +15,11 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         meta: {
-          title: $t('demos.naive'),
+          title: $t('demos.arco'),
         },
-        name: 'NaiveDemos',
-        path: '/demos/naive',
-        component: () => import('#/views/demos/naive/index.vue'),
+        name: 'ArcoDemos',
+        path: '/demos/arco',
+        component: () => import('#/views/demos/arco/index.vue'),
       },
       {
         meta: {
