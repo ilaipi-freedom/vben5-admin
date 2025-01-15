@@ -1,7 +1,13 @@
 <script lang="ts" setup>
 import { Page } from '@vben/common-ui';
 
-import { Button, Card, Message, Space } from '@arco-design/web-vue';
+import {
+  Button,
+  Card,
+  Message,
+  Notification,
+  Space,
+} from '@arco-design/web-vue';
 
 function error() {
   Message.error('Once upon a time you dressed so fine');
@@ -22,7 +28,7 @@ function loading() {
 }
 
 function notify(type: 'error' | 'info' | 'success' | 'warning') {
-  Message.notification({
+  Notification[type]({
     type,
     content: '说点啥呢',
     duration: 2500,
