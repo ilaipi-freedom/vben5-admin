@@ -117,13 +117,15 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'Textarea',
       fieldName: 'textArea',
       label: 'TextArea',
       componentProps: {
         type: 'textarea',
         placeholder: '请输入内容',
-        rows: 4,
+        'auto-size': {
+          minRows: 4,
+        },
         allowClear: true,
       },
       rules: 'required',
