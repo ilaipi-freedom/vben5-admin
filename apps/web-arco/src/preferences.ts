@@ -13,5 +13,6 @@ export const overridesPreferences = defineOverridesPreferences({
       enable: true,
       fixed: true,
     },
+    enableRefreshToken: false,
   },
 });

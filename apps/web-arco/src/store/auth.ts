@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      const { token: accessToken } = await loginApi(params);
 
       // 如果成功获取到 accessToken
       if (accessToken) {

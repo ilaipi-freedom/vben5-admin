@@ -71,10 +71,9 @@ function createRequestClient(baseURL: string) {
   // response数据解构
   client.addResponseInterceptor<HttpResponse>({
     fulfilled: (response) => {
-      const { data: responseData, status } = response;
+      const { data, status } = response;
 
-      const { code, data } = responseData;
-      if (status >= 200 && status < 400 && code === 0) {
+      if (status >= 200 && status < 400) {
         return data;
       }
       throw Object.assign({}, response, { response });
