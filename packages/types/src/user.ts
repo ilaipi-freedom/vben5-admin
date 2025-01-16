@@ -15,6 +15,9 @@ interface UserInfo extends BasicUserInfo {
    * accessToken
    */
   token: string;
+  role: {
+    perm: string;
+  };
 }
 
 export type { UserInfo };

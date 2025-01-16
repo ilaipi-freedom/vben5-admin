@@ -8,11 +8,20 @@ import { defineOverridesPreferences } from '@vben/preferences';
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
+    authPageLayout: 'panel-center',
     name: import.meta.env.VITE_APP_TITLE,
-    footer: {
-      enable: true,
-      fixed: true,
-    },
     enableRefreshToken: false,
+  },
+  footer: {
+    enable: true,
+    fixed: true,
+  },
+  copyright: {
+    companyName: 'ilaipi',
+    companySiteLink: 'https://www.ilaipi.com',
+    date: '2024',
+    enable: true,
+    icp: '豫ICP备2024041734号-1',
+    icpLink: 'https://www.ilaipi.com',
   },
 });
