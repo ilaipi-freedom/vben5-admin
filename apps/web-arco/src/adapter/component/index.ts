@@ -144,10 +144,7 @@ async function initComponentAdapter() {
       } else {
         const { options } = attrs;
         if (Array.isArray(options)) {
-          defaultSlot = () =>
-            options.map((option) =>
-              h(ARadio, option),
-            );
+          defaultSlot = () => options.map((option) => h(ARadio, option));
         }
       }
       const groupRender = h(
@@ -174,7 +171,7 @@ async function initComponentAdapter() {
   // 定义全局共享状态中的消息提示
   globalShareState.defineMessage({
     // 复制成功消息提示
-    copyPreferencesSuccess: (title, content) => {
+    copyPreferencesSuccess: (title: string, content?: string) => {
       message.success(content || title);
     },
   });
