@@ -1,5 +1,7 @@
 import { defineOverridesPreferences } from '@vben/preferences';
 
+import dayjs from 'dayjs';
+
 /**
  * @description 项目配置文件
  * 只需要覆盖项目中的一部分配置，不需要的配置不用覆盖，会自动使用默认配置
@@ -18,11 +20,13 @@ export const overridesPreferences = defineOverridesPreferences({
     fixed: true,
   },
   copyright: {
-    companyName: 'ilaipi',
-    companySiteLink: 'https://www.ilaipi.com',
-    date: '2024',
+    companyName: import.meta.env.VITE_APP_COPYRIGHT_COMPANY_NAME || 'vben',
+    companySiteLink:
+      import.meta.env.VITE_APP_COPYRIGHT_COMPANY_SITE_LINK ||
+      'https://www.ilaipi.com',
+    date: dayjs().format('YYYY'),
     enable: true,
-    icp: '豫ICP备2024041734号-1',
-    icpLink: 'https://www.ilaipi.com',
+    icp: import.meta.env.VITE_APP_COPYRIGHT_ICP,
+    icpLink: import.meta.env.VITE_APP_COPYRIGHT_ICP_LINK,
   },
 });
