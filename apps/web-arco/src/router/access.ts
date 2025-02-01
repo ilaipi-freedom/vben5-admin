@@ -24,9 +24,7 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   return await generateAccessible(preferences.app.accessMode, {
     ...options,
     fetchMenuListAsync: async () => {
-      message.loading(`${$t('common.loadingMenu')}...`, {
-        duration: 1.5,
-      });
+      message.loading(`${$t('common.loadingMenu')}...`);
       return await getAllMenusApi();
     },
     // 可以指定没有权限跳转403页面

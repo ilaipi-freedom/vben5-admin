@@ -13,11 +13,11 @@ export default defineConfig(async () => {
             target: 'http://localhost:5320/api',
             ws: true,
           },
-          '/ykapi': {
+          '/veapi': {
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/ykapi/, ''),
+            rewrite: (path) => path.replace(/^\/veapi/, ''),
             // mock代理目标地址
-            target: 'http://localhost:9752/ykapi',
+            target: 'http://localhost:9401/veapi',
             ws: true,
           },
         },
