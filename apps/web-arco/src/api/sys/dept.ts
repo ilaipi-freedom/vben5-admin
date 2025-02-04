@@ -55,3 +55,10 @@ export async function createDept(params: CreateDeptParams) {
 export async function updateDeptApi(id: string, params: UpdateDeptParams) {
   return requestClient.put(`/dept/${id}`, params);
 }
+
+/**
+ * 删除部门
+ */
+export async function deleteDeptApi(id: string) {
+  return requestClient.delete(`/dept/${id}`);
+}

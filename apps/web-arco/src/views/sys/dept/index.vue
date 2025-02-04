@@ -5,11 +5,11 @@ import { ref } from 'vue';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { Button, Space, Switch } from '@arco-design/web-vue';
+import { Button, Popconfirm, Space, Switch } from '@arco-design/web-vue';
 import { IconPlus } from '@arco-design/web-vue/es/icon';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDeptList, updateDeptApi } from '#/api';
+import { deleteDeptApi, getDeptList, updateDeptApi } from '#/api';
 import { AvailableStatusEnum } from '#/constants';
 
 import DeptModalComp from './DeptModal/index.vue';
@@ -52,6 +52,9 @@ const gridOptions: VxeGridProps<DeptRow> = {
       slots: { default: 'action' },
     },
   ],
+  rowConfig: {
+    isHover: true,
+  },
   treeConfig: {
     transform: true,
     parentField: 'parentDeptId',
@@ -114,8 +117,9 @@ const handleEdit = (row: DeptRow) => {
 };
 
 // 删除部门
-const handleDelete = (row: DeptRow) => {
-  // TODO: 实现删除部门逻辑
+const handleDelete = async (row: DeptRow) => {
+  await deleteDeptApi(row.id);
+  gridApi.reload();
 };
 </script>
 
@@ -142,14 +146,9 @@ const handleDelete = (row: DeptRow) => {
         <Button type="text" size="small" @click="handleEdit(row)">
           编辑
         </Button>
-        <Button
-          type="text"
-          status="danger"
-          size="small"
-          @click="handleDelete(row)"
-        >
-          删除
-        </Button>
+        <Popconfirm content="确定删除该部门吗？" @ok="handleDelete(row)">
+          <Button type="text" size="small" status="danger"> 删除 </Button>
+        </Popconfirm>
       </template>
 
       <template #toolbar-tools>
