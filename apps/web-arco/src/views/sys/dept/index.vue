@@ -103,11 +103,12 @@ const toggleExpandAll = (expand = true) => {
 };
 
 // 新增部门
-const handleAdd = () => {
+const handleAdd = (row?: DeptRow) => {
   modalApi
     .setState({
       title: '新增部门',
     })
+    .setData({ parentDeptId: row?.id })
     .open();
 };
 
@@ -154,6 +155,9 @@ const handleDelete = async (row: DeptRow) => {
         <Popconfirm content="确定删除该部门吗？" @ok="handleDelete(row)">
           <Button type="text" size="small" status="danger"> 删除 </Button>
         </Popconfirm>
+        <Button type="text" size="small" @click="() => handleAdd(row)">
+          新增
+        </Button>
       </template>
 
       <template #toolbar-tools>

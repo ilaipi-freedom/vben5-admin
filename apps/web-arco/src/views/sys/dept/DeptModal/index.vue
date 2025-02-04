@@ -39,6 +39,7 @@ const [Modal, modalApi] = useVbenModal({
         values as CreateDeptParams | UpdateDeptParams,
         data?.id,
       );
+      await formApi.resetForm();
       modalApi.close();
       emit('success');
     } catch {
@@ -48,7 +49,7 @@ const [Modal, modalApi] = useVbenModal({
     }
   },
   onOpened: () => {
-    const data = modalApi.getData();
+    const data = modalApi.getData() || {};
     formApi.updateSchema([
       {
         fieldName: 'parentDeptId',
@@ -57,9 +58,6 @@ const [Modal, modalApi] = useVbenModal({
         },
       },
     ]);
-    if (!data?.id) {
-      return;
-    }
     const { name, remark, sort, status, parentDeptId } = data;
     formApi.setValues({
       name,
