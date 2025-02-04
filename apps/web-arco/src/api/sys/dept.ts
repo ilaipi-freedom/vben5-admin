@@ -1,3 +1,5 @@
+import type { AvailableStatusEnum } from '#/constants';
+
 import { requestClient } from '#/api/request';
 
 export namespace DeptApi {
@@ -32,9 +34,24 @@ export interface CreateDeptParams {
   sort: number;
 }
 
+/** 更新部门参数 */
+export interface UpdateDeptParams {
+  status: AvailableStatusEnum;
+  name?: string;
+  remark?: string;
+  sort?: number;
+}
+
 /**
  * 创建部门
  */
 export async function createDept(params: CreateDeptParams) {
   return requestClient.post('/dept', params);
+}
+
+/**
+ * 更新部门
+ */
+export async function updateDeptApi(id: string, params: UpdateDeptParams) {
+  return requestClient.put(`/dept/${id}`, params);
 }

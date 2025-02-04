@@ -1,13 +1,16 @@
 <script lang="ts" setup name="DeptManagement">
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { ref } from 'vue';
+
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { Button, Space } from '@arco-design/web-vue';
+import { Button, Space, Switch } from '@arco-design/web-vue';
 import { IconPlus } from '@arco-design/web-vue/es/icon';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDeptList } from '#/api';
+import { getDeptList, updateDeptApi } from '#/api';
+import { AvailableStatusEnum } from '#/constants';
 
 import DeptModalComp from './DeptModal/index.vue';
 
@@ -21,10 +24,12 @@ interface DeptRow {
   parentDeptId: string;
 }
 
+const updatingDeptStatus = ref(false);
+
 // 表格配置
 const gridOptions: VxeGridProps<DeptRow> = {
   columns: [
-    { type: 'seq', width: 60, title: '序号' },
+    { type: 'seq', width: 100, title: '序号' },
     {
       field: 'name',
       title: '部门名称',
@@ -36,9 +41,7 @@ const gridOptions: VxeGridProps<DeptRow> = {
       field: 'status',
       title: '状态',
       width: 100,
-      formatter: ({ cellValue }) => {
-        return cellValue === 1 ? '启用' : '停用';
-      },
+      slots: { default: 'status' },
     },
     { field: 'createdAt', title: '创建时间', width: 180 },
     { field: 'remark', title: '备注', minWidth: 150 },
@@ -122,6 +125,18 @@ const handleDelete = (row: DeptRow) => {
     <DeptModal @success="gridApi.reload" />
 
     <Grid class="xxx h-full">
+      <template #status="{ row }">
+        <Switch
+          :loading="updatingDeptStatus"
+          :checked-value="AvailableStatusEnum.Normal"
+          :unchecked-value="AvailableStatusEnum.Forbidden"
+          v-model="row.status"
+          @change="
+            (value) =>
+              updateDeptApi(row.id, { status: value as AvailableStatusEnum })
+          "
+        />
+      </template>
       <!-- 操作列 -->
       <template #action="{ row }">
         <Button type="text" size="small" @click="handleEdit(row)">
