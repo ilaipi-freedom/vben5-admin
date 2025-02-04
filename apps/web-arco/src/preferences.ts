@@ -16,7 +16,7 @@ export const overridesPreferences = defineOverridesPreferences({
     accessMode: import.meta.env.VITE_APP_ACCESS_MODE,
   },
   footer: {
-    enable: true,
+    enable: false,
     fixed: true,
   },
   copyright: {
