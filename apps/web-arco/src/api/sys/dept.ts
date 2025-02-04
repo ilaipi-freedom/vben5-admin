@@ -45,7 +45,7 @@ export interface UpdateDeptParams {
 /**
  * 创建部门
  */
-export async function createDept(params: CreateDeptParams) {
+export async function createDeptApi(params: CreateDeptParams) {
   return requestClient.post('/dept', params);
 }
 
@@ -54,6 +54,15 @@ export async function createDept(params: CreateDeptParams) {
  */
 export async function updateDeptApi(id: string, params: UpdateDeptParams) {
   return requestClient.put(`/dept/${id}`, params);
+}
+
+export async function saveDeptApi(
+  params: CreateDeptParams | UpdateDeptParams,
+  id?: string,
+) {
+  return id
+    ? updateDeptApi(id, params as UpdateDeptParams)
+    : createDeptApi(params as CreateDeptParams);
 }
 
 /**

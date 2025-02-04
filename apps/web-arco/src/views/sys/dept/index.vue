@@ -113,7 +113,12 @@ const handleAdd = () => {
 
 // 编辑部门
 const handleEdit = (row: DeptRow) => {
-  // TODO: 实现编辑部门逻辑
+  modalApi
+    .setState({
+      title: '编辑部门',
+    })
+    .setData(row)
+    .open();
 };
 
 // 删除部门

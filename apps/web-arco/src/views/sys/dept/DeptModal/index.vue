@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CreateDeptParams } from '#/api';
+import type { CreateDeptParams, UpdateDeptParams } from '#/api';
 
 import { ref } from 'vue';
 
@@ -9,7 +9,7 @@ import { Spin } from '@arco-design/web-vue';
 
 import { message } from '#/adapter/arco';
 import { useVbenForm } from '#/adapter/form';
-import { createDept } from '#/api';
+import { saveDeptApi } from '#/api';
 
 import { deptFormSchema } from '../schema';
 
@@ -26,25 +26,48 @@ const [DeptForm, formApi] = useVbenForm({
   layout: 'horizontal',
   actionWrapperClass: 'text-center',
   schema: deptFormSchema(),
-  handleSubmit: async () => {
-    loading.value = true;
-    try {
-      const values = await formApi.getValues();
-      await createDept(values as CreateDeptParams);
-    } catch {
-      message.error(`创建部门失败`);
-    } finally {
-      loading.value = false;
-    }
-  },
 });
 
 const [Modal, modalApi] = useVbenModal({
   onConfirm: async () => {
-    await formApi.validate();
-    await formApi.submitForm();
-    modalApi.close();
-    emit('success');
+    loading.value = true;
+    try {
+      await formApi.validate();
+      const data = modalApi.getData();
+      const values = await formApi.getValues();
+      await saveDeptApi(
+        values as CreateDeptParams | UpdateDeptParams,
+        data?.id,
+      );
+      modalApi.close();
+      emit('success');
+    } catch {
+      message.error(`提交失败`);
+    } finally {
+      loading.value = false;
+    }
+  },
+  onOpened: () => {
+    const data = modalApi.getData();
+    formApi.updateSchema([
+      {
+        fieldName: 'parentDeptId',
+        componentProps: {
+          disabled: !!data?.id,
+        },
+      },
+    ]);
+    if (!data?.id) {
+      return;
+    }
+    const { name, remark, sort, status, parentDeptId } = data;
+    formApi.setValues({
+      name,
+      remark,
+      sort,
+      status,
+      parentDeptId,
+    });
   },
 });
 </script>
@@ -56,8 +79,3 @@ const [Modal, modalApi] = useVbenModal({
     </Spin>
   </Modal>
 </template>
-<style>
-.arco-trigger-popup {
-  z-index: 2001 !important;
-}
-</style>
