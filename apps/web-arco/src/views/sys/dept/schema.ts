@@ -68,3 +68,12 @@ export const deptFormSchema = () => [
     },
   },
 ];
+
+export const deptSearchFormSchema = () => [
+  {
+    component: 'Input',
+    fieldName: 'q',
+    label: '搜索',
+    help: '模糊匹配：部门名称',
+  },
+];

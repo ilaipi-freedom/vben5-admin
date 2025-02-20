@@ -1,4 +1,5 @@
 <script lang="ts" setup name="DeptManagement">
+import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
@@ -13,6 +14,7 @@ import { deleteDeptApi, getDeptList, updateDeptApi } from '#/api';
 import { AvailableStatusEnum } from '#/constants';
 
 import DeptModalComp from './DeptModal/index.vue';
+import { deptSearchFormSchema } from './schema';
 
 interface DeptRow {
   id: string;
@@ -26,6 +28,18 @@ interface DeptRow {
 
 const updatingDeptStatus = ref(false);
 
+const formOptions: VbenFormProps = {
+  // 默认展开
+  collapsed: false,
+  schema: deptSearchFormSchema(),
+  // 控制表单是否显示折叠按钮
+  showCollapseButton: false,
+  // 是否在字段值改变时提交表单
+  submitOnChange: false,
+  // 按下回车时是否提交表单
+  submitOnEnter: true,
+};
+
 // 表格配置
 const gridOptions: VxeGridProps<DeptRow> = {
   columns: [
@@ -35,6 +49,7 @@ const gridOptions: VxeGridProps<DeptRow> = {
       title: '部门名称',
       minWidth: 300,
       treeNode: true, // 树节点列
+      align: 'left',
     },
     { field: 'sort', title: '排序', width: 100 },
     {
@@ -63,8 +78,8 @@ const gridOptions: VxeGridProps<DeptRow> = {
   },
   proxyConfig: {
     ajax: {
-      query: async () => {
-        const items = await getDeptList();
+      query: async (_, formValues: any) => {
+        const items = await getDeptList(formValues);
         return {
           items,
         };
@@ -79,7 +94,6 @@ const gridOptions: VxeGridProps<DeptRow> = {
     export: false,
     refresh: true,
     resizable: true,
-    search: false,
     zoom: true,
   },
 };
@@ -87,6 +101,7 @@ const gridOptions: VxeGridProps<DeptRow> = {
 // 创建表格
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+  formOptions,
 });
 
 // 创建新增部门弹窗
@@ -162,7 +177,7 @@ const handleDelete = async (row: DeptRow) => {
 
       <template #toolbar-tools>
         <Space>
-          <Button type="primary" @click="handleAdd">
+          <Button type="primary" @click="() => handleAdd()">
             <template #icon>
               <IconPlus />
             </template>

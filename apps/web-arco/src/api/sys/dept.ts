@@ -18,8 +18,8 @@ export namespace DeptApi {
 /**
  * 获取部门列表
  */
-export async function getDeptList() {
-  return requestClient.get<DeptApi.DeptItem[]>('/dept');
+export async function getDeptList(params: any) {
+  return requestClient.get<DeptApi.DeptItem[]>('/dept', { params });
 }
 
 export async function getDeptTree() {
