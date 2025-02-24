@@ -46,7 +46,7 @@ jobs:
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_HUB_SPACE }}/${{ vars.DOCKER_IMAGE_NAME }}-dev:latest
 
       - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.2.1
         env:
           INPUT_DOCKER_CONTAINER_NAME: ${{ vars.DOCKER_CONTAINER_NAME }}
         with:
