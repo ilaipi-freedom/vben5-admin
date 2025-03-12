@@ -1,0 +1,13 @@
+{
+  "title": "System Settings",
+  "dept": {
+    "name": "department",
+    "deptName": "department name",
+    "status": "status",
+    "createTime": "create time",
+    "remark": "remark",
+    "operation": "operation",
+    "title": "department management",
+    "parentDept": "parent department"
+  }
+}

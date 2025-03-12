@@ -6,18 +6,18 @@ const routes: RouteRecordRaw[] = [
   {
     meta: {
       icon: 'lucide:settings',
-      title: $t('sys.title'),
+      title: $t('system.title'),
     },
-    name: 'Sys',
-    path: '/sys',
+    name: 'System',
+    path: '/system',
     children: [
       {
         name: 'Dept',
         path: 'dept',
-        component: () => import('#/views/sys/dept/index.vue'),
+        component: () => import('#/views/system/dept/list.vue'),
         meta: {
           icon: 'lucide:network',
-          title: $t('sys.dept.title'),
+          title: $t('system.dept.title'),
         },
       },
     ],

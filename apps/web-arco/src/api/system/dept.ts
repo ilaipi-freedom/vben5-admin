@@ -2,7 +2,7 @@ import type { AvailableStatusEnum } from '#/constants';
 
 import { requestClient } from '#/api/request';
 
-export namespace DeptApi {
+export namespace SystemDeptApi {
   /** 部门列表项 */
   export interface DeptItem {
     id: string;
@@ -12,18 +12,19 @@ export namespace DeptApi {
     status: number;
     remark: string;
     parentDeptId: string;
+    children?: DeptItem[];
   }
 }
 
 /**
  * 获取部门列表
  */
-export async function getDeptList(params: any) {
-  return requestClient.get<DeptApi.DeptItem[]>('/dept', { params });
+export async function getDeptListApi(params: any) {
+  return requestClient.get<SystemDeptApi.DeptItem[]>('/dept', { params });
 }
 
-export async function getDeptTree() {
-  return requestClient.get<DeptApi.DeptItem[]>('/dept/tree');
+export async function getDeptTreeApi() {
+  return requestClient.get<SystemDeptApi.DeptItem[]>('/dept/tree');
 }
 
 /** 创建部门参数 */

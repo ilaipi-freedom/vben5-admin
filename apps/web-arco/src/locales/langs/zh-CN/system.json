@@ -1,0 +1,13 @@
+{
+  "title": "系统设置",
+  "dept": {
+    "name": "部门",
+    "deptName": "部门名称",
+    "status": "状态",
+    "createTime": "创建时间",
+    "remark": "备注",
+    "operation": "操作",
+    "title": "部门管理",
+    "parentDept": "上级部门"
+  }
+}
