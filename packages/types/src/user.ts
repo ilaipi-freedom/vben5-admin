@@ -3,6 +3,10 @@ import type { BasicUserInfo } from '@vben-core/typings';
 /** 用户信息 */
 interface UserInfo extends BasicUserInfo {
   /**
+   * 用户姓名
+   */
+  name: string;
+  /**
    * 用户描述
    */
   desc: string;
@@ -17,6 +21,7 @@ interface UserInfo extends BasicUserInfo {
   token: string;
   role: {
     perm: string;
+    route: string;
   };
 }
 

@@ -42,19 +42,19 @@ export const useAuthStore = defineStore('auth', () => {
         // 获取用户信息并存储到 accessStore 中
 
         const userInfo = await fetchUserInfo();
-
+        userInfo.homePath = userInfo?.role?.route;
+        const userRoles = userInfo?.role?.perm ? [userInfo?.role?.perm] : [];
+        userStore.setUserRoles(userRoles);
+        accessStore.setAccessCodes(userRoles);
         userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(
-          userInfo?.role.perm ? [userInfo?.role.perm] : [],
-        );
+        accessStore.setIsAccessChecked(false);
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
-        } else {
-          onSuccess
-            ? await onSuccess?.()
-            : await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
         }
+        onSuccess
+          ? await onSuccess()
+          : await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
 
         if (userInfo?.realName) {
           notification.success({
@@ -64,6 +64,8 @@ export const useAuthStore = defineStore('auth', () => {
           });
         }
       }
+    } catch (error) {
+      console.error('login api response error', error);
     } finally {
       loginLoading.value = false;
     }
@@ -96,6 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function fetchUserInfo() {
     let userInfo: null | UserInfo = null;
     userInfo = await getUserInfoApi();
+    userInfo.realName = userInfo?.realName || userInfo?.name || '';
     userStore.setUserInfo(userInfo);
     return userInfo;
   }
