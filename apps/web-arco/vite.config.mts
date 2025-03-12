@@ -1,23 +1,21 @@
+import process from 'node:process';
+
 import { defineConfig } from '@vben/vite-config';
 
-export default defineConfig(async () => {
+import { loadEnv } from 'vite';
+
+export default defineConfig(async (config) => {
+  const env = loadEnv(config?.mode || 'development', process.cwd());
+  const apiPrefix: string = env.VITE_GLOB_API_URL || '/api';
   return {
     application: {},
     vite: {
       server: {
         proxy: {
-          '/api': {
+          [apiPrefix]: {
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
-            // mock代理目标地址
-            target: 'http://localhost:5320/api',
-            ws: true,
-          },
-          '/veapi': {
-            changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/veapi/, ''),
-            // mock代理目标地址
-            target: 'http://localhost:9401/veapi',
+            rewrite: (path: string) => path.replace(/^\/api/, ''),
+            target: env.VITE_GLOBAL_SERVER_URL || 'http://localhost:5320',
             ws: true,
           },
         },
