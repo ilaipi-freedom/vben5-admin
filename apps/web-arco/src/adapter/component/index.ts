@@ -141,7 +141,7 @@ async function initComponentAdapter() {
     DatePicker,
     // 自定义默认按钮
     DefaultButton: (props, { attrs, slots }) => {
-      return h(Button, { ...props, attrs, type: 'default' }, slots);
+      return h(Button, { ...props, attrs, type: 'secondary' }, slots);
     },
     Divider,
     IconPicker: (props, { attrs, slots }) => {
