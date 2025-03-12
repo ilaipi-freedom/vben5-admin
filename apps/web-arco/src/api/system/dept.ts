@@ -18,10 +18,10 @@ export namespace SystemDeptApi {
   /** 创建部门参数 */
   export interface SaveDeptParams {
     status?: AvailableStatusEnum;
-    name: string;
+    name?: string;
     parentDeptId?: string;
     remark?: string;
-    sort: number;
+    sort?: number;
   }
 }
 

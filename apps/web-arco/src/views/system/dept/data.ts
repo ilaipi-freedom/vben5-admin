@@ -5,7 +5,7 @@ import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
 import { z } from '#/adapter/form';
-import { getDeptTreeApi } from '#/api/system/dept';
+import { getDeptTreeApi, saveDeptApi } from '#/api/system/dept';
 import { $t } from '#/locales';
 import { AvailableStatusEnum } from '#/typings/common';
 
@@ -114,6 +114,12 @@ export function useColumns(
     {
       cellRender: {
         name: 'CellSwitch',
+        attrs: {
+          beforeChange: async (newVal: any, row: SystemDeptApi.DeptItem) => {
+            await saveDeptApi({ status: newVal }, row.id);
+            return true;
+          },
+        },
       },
       field: 'status',
       title: $t('system.dept.status'),
