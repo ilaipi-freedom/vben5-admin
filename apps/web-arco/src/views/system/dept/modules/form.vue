@@ -8,12 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from '@arco-design/web-vue';
 
 import { useVbenForm } from '#/adapter/form';
+import { saveDeptApi } from '#/api/system/dept';
 import { $t } from '#/locales';
 
 import { useSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDeptApi.SystemDept>();
+const formData = ref<SystemDeptApi.DeptItem>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', [$t('system.dept.name')])
@@ -36,11 +37,12 @@ const [Modal, modalApi] = useVbenModal({
     const { valid } = await formApi.validate();
     if (valid) {
       modalApi.lock();
-      const data = formApi.getValues();
+      const data = await formApi.getValues();
       try {
-        await (formData.value?.id
-          ? updateDept(formData.value.id, data)
-          : createDept(data));
+        await saveDeptApi(
+          data as unknown as SystemDeptApi.SaveDeptParams,
+          formData.value?.id,
+        );
         modalApi.close();
         emit('success');
       } finally {
@@ -50,11 +52,8 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDeptApi.SystemDept>();
+      const data = modalApi.getData<SystemDeptApi.DeptItem>();
       if (data) {
-        if (data.pid === 0) {
-          data.pid = undefined;
-        }
         formData.value = data;
         formApi.setValues(formData.value);
       }

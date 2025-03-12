@@ -51,18 +51,25 @@ function onCreate() {
  * @param row
  */
 function onDelete(row: SystemDeptApi.DeptItem) {
-  message.loading({
+  const { close } = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
-    duration: 3,
+    duration: 0,
     id: 'action_process_msg',
   });
-  deleteDeptApi(row.id).then(() => {
-    message.success({
-      content: $t('ui.actionMessage.deleteSuccess', [row.name]),
-      id: 'action_process_msg',
+  deleteDeptApi(row.id)
+    .then(() => {
+      message.success({
+        content: $t('ui.actionMessage.deleteSuccess', [row.name]),
+        id: 'action_process_msg',
+      });
+      refreshGrid();
+    })
+    .catch(() => {
+      close();
+    })
+    .finally(() => {
+      close();
     });
-    refreshGrid();
-  });
 }
 
 /**
