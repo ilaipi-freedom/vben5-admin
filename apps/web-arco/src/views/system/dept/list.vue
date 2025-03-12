@@ -8,7 +8,7 @@ import type { SystemDeptApi } from '#/api/system/dept';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button } from '@arco-design/web-vue';
+import { Button, Space } from '@arco-design/web-vue';
 
 import { message } from '#/adapter/arco';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -22,6 +22,10 @@ const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
   destroyOnClose: true,
 });
+
+const toggleExpandAll = (expand = true) => {
+  gridApi.grid?.setAllTreeExpand(expand);
+};
 
 /**
  * 编辑部门
@@ -137,10 +141,14 @@ function refreshGrid() {
     <FormModal @success="refreshGrid" />
     <Grid table-title="部门列表">
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}
-        </Button>
+        <Space>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}
+          </Button>
+          <Button @click="toggleExpandAll(true)"> 全展 </Button>
+          <Button @click="toggleExpandAll(false)"> 全收 </Button>
+        </Space>
       </template>
     </Grid>
   </Page>
