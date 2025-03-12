@@ -8,6 +8,8 @@
     "remark": "remark",
     "operation": "operation",
     "title": "department management",
-    "parentDept": "parent department"
+    "parentDept": "parent department",
+    "append": "append",
+    "sort": "sort"
   }
 }

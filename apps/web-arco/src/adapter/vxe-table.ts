@@ -10,6 +10,7 @@ import { get, isFunction, isString } from '@vben/utils';
 import { Button, Image, Popconfirm, Switch, Tag } from '@arco-design/web-vue';
 import { objectOmit } from '@vueuse/core';
 
+import { AvailableStatusEnum } from '#/constants';
 import { $t } from '#/locales';
 
 import { useVbenForm } from './form';
@@ -79,8 +80,16 @@ setupVbenVxeTable({
       renderTableDefault({ options, props }, { column, row }) {
         const value = get(row, column.field);
         const tagOptions = options ?? [
-          { color: 'success', label: $t('common.enabled'), value: 1 },
-          { color: 'error', label: $t('common.disabled'), value: 0 },
+          {
+            color: 'success',
+            label: $t('common.enabled'),
+            value: AvailableStatusEnum.Normal,
+          },
+          {
+            color: 'error',
+            label: $t('common.disabled'),
+            value: AvailableStatusEnum.Forbidden,
+          },
         ];
         const tagItem = tagOptions.find((item) => item.value === value);
         return h(
@@ -98,14 +107,14 @@ setupVbenVxeTable({
       renderTableDefault({ attrs, props }, { column, row }) {
         const loadingKey = `__loading_${column.field}`;
         const finallyProps = {
-          checkedChildren: $t('common.enabled'),
-          checkedValue: 1,
-          unCheckedChildren: $t('common.disabled'),
-          unCheckedValue: 0,
+          checkedText: $t('common.enabled'),
+          checkedValue: AvailableStatusEnum.Normal,
+          uncheckedText: $t('common.disabled'),
+          uncheckedValue: AvailableStatusEnum.Forbidden,
           ...props,
-          checked: row[column.field],
+          modelValue: row[column.field],
           loading: row[loadingKey] ?? false,
-          'onUpdate:checked': onChange,
+          'onUpdate:modelValue': onChange,
         };
         async function onChange(newVal: any) {
           row[loadingKey] = true;
@@ -127,7 +136,7 @@ setupVbenVxeTable({
      */
     vxeUI.renderer.add('CellOperation', {
       renderTableDefault({ attrs, options, props }, { column, row }) {
-        const defaultProps = { size: 'small', type: 'link', ...props };
+        const defaultProps = { size: 'small', type: 'text', ...props };
         let align = 'end';
         switch (column.align) {
           case 'center': {
@@ -228,7 +237,7 @@ setupVbenVxeTable({
             },
             {
               default: () => renderBtn({ ...opt }, false),
-              description: () =>
+              content: () =>
                 h(
                   'div',
                   { class: 'truncate' },

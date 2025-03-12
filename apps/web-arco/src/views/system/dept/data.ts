@@ -5,7 +5,7 @@ import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
 import { z } from '#/adapter/form';
-import { getDeptListApi } from '#/api/system/dept';
+import { getDeptTreeApi } from '#/api/system/dept';
 import { $t } from '#/locales';
 import { AvailableStatusEnum } from '#/typings/common';
 
@@ -27,10 +27,22 @@ export function useSchema(): VbenFormSchema[] {
         ),
     },
     {
+      component: 'InputNumber',
+      fieldName: 'sort',
+      label: $t('system.dept.sort'),
+      rules: z
+        .number()
+        .min(0, $t('ui.formRules.minLength', [$t('system.dept.sort'), 0]))
+        .max(
+          10_000,
+          $t('ui.formRules.maxLength', [$t('system.dept.sort'), 10_000]),
+        ),
+    },
+    {
       component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        api: getDeptListApi,
+        api: getDeptTreeApi,
         class: 'w-full',
         labelField: 'name',
         valueField: 'id',
@@ -91,13 +103,24 @@ export function useColumns(
       width: 150,
     },
     {
-      cellRender: { name: 'CellTag' },
+      field: 'sort',
+      title: $t('system.dept.sort'),
+      width: 100,
+      titleSuffix: {
+        content: '数值越小越靠前<br/> 建议使用10/20/30，方便向中间插入',
+        useHTML: true,
+      },
+    },
+    {
+      cellRender: {
+        name: 'CellSwitch',
+      },
       field: 'status',
       title: $t('system.dept.status'),
       width: 100,
     },
     {
-      field: 'createTime',
+      field: 'createdAt',
       title: $t('system.dept.createTime'),
       width: 180,
     },
@@ -117,7 +140,7 @@ export function useColumns(
         options: [
           {
             code: 'append',
-            text: '新增下级',
+            text: $t('system.dept.append'),
           },
           'edit', // 默认的编辑按钮
           {
@@ -133,7 +156,7 @@ export function useColumns(
       headerAlign: 'center',
       showOverflow: false,
       title: $t('system.dept.operation'),
-      width: 200,
+      width: 220,
     },
   ];
 }

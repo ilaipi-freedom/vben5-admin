@@ -12,7 +12,7 @@ import { Button } from '@arco-design/web-vue';
 
 import { message } from '#/adapter/arco';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteDeptApi, getDeptListApi } from '#/api';
+import { deleteDeptApi, getDeptTreeApi } from '#/api';
 import { $t } from '#/locales';
 
 import { useColumns } from './data';
@@ -36,7 +36,7 @@ function onEdit(row: SystemDeptApi.SystemDept) {
  * @param row
  */
 function onAppend(row: SystemDeptApi.SystemDept) {
-  formModalApi.setData({ pid: row.id }).open();
+  formModalApi.setData({ parentDeptId: row.id }).open();
 }
 
 /**
@@ -104,7 +104,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getDeptListApi();
+          return await getDeptTreeApi();
         },
       },
     },
@@ -115,7 +115,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       zoom: true,
     },
     treeConfig: {
-      parentField: 'pid',
+      parentField: 'parentDeptId',
       rowField: 'id',
       transform: false,
     },

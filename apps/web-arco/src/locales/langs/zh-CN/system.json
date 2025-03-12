@@ -8,6 +8,8 @@
     "remark": "备注",
     "operation": "操作",
     "title": "部门管理",
-    "parentDept": "上级部门"
+    "parentDept": "上级部门",
+    "append": "新增下级",
+    "sort": "排序"
   }
 }
