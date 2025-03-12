@@ -224,11 +224,10 @@ setupVbenVxeTable({
                 return el.closest('tbody') || document.body;
               },
               placement: 'topLeft',
-              title: $t('ui.actionTitle.delete', [attrs?.nameTitle || '']),
               ...props,
               ...opt,
               icon: undefined,
-              onConfirm: () => {
+              onOk: () => {
                 attrs?.onClick?.({
                   code: opt.code,
                   row,

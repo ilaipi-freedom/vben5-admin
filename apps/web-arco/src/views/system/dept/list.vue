@@ -27,7 +27,7 @@ const [FormModal, formModalApi] = useVbenModal({
  * 编辑部门
  * @param row
  */
-function onEdit(row: SystemDeptApi.SystemDept) {
+function onEdit(row: SystemDeptApi.DeptItem) {
   formModalApi.setData(row).open();
 }
 
@@ -35,7 +35,7 @@ function onEdit(row: SystemDeptApi.SystemDept) {
  * 添加下级部门
  * @param row
  */
-function onAppend(row: SystemDeptApi.SystemDept) {
+function onAppend(row: SystemDeptApi.DeptItem) {
   formModalApi.setData({ parentDeptId: row.id }).open();
 }
 
@@ -50,23 +50,19 @@ function onCreate() {
  * 删除部门
  * @param row
  */
-function onDelete(row: SystemDeptApi.SystemDept) {
-  const hideLoading = message.loading({
+function onDelete(row: SystemDeptApi.DeptItem) {
+  message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
-    duration: 0,
-    key: 'action_process_msg',
+    duration: 3,
+    id: 'action_process_msg',
   });
-  deleteDeptApi(row.id)
-    .then(() => {
-      message.success({
-        content: $t('ui.actionMessage.deleteSuccess', [row.name]),
-        key: 'action_process_msg',
-      });
-      refreshGrid();
-    })
-    .catch(() => {
-      hideLoading();
+  deleteDeptApi(row.id).then(() => {
+    message.success({
+      content: $t('ui.actionMessage.deleteSuccess', [row.name]),
+      id: 'action_process_msg',
     });
+    refreshGrid();
+  });
 }
 
 /**
@@ -75,7 +71,7 @@ function onDelete(row: SystemDeptApi.SystemDept) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemDeptApi.SystemDept>) {
+}: OnActionClickParams<SystemDeptApi.DeptItem>) {
   switch (code) {
     case 'append': {
       onAppend(row);

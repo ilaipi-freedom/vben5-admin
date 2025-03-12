@@ -145,6 +145,7 @@ export function useColumns(
           'edit', // 默认的编辑按钮
           {
             code: 'delete', // 默认的删除按钮
+            status: 'danger',
             disabled: (row: SystemDeptApi.DeptItem) => {
               return !!(row.children && row.children.length > 0);
             },
