@@ -1,23 +1,24 @@
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemMenuApi } from '#/api/system/menu';
 
+import { saveMenuApi } from '#/api/system/menu';
 import { $t } from '#/locales';
 
 export function getMenuTypeOptions() {
   return [
     {
-      color: 'processing',
+      color: '#165dff',
       label: $t('system.menu.typeCatalog'),
       value: 'catalog',
     },
-    { color: 'default', label: $t('system.menu.typeMenu'), value: 'menu' },
-    { color: 'error', label: $t('system.menu.typeButton'), value: 'button' },
+    { color: '#86909c', label: $t('system.menu.typeMenu'), value: 'menu' },
+    { color: '#f53f3f', label: $t('system.menu.typeButton'), value: 'button' },
     {
-      color: 'success',
+      color: '#00b42a',
       label: $t('system.menu.typeEmbedded'),
       value: 'embedded',
     },
-    { color: 'warning', label: $t('system.menu.typeLink'), value: 'link' },
+    { color: '#ffb400', label: $t('system.menu.typeLink'), value: 'link' },
   ];
 }
 
@@ -75,7 +76,15 @@ export function useColumns(
       title: $t('system.menu.component'),
     },
     {
-      cellRender: { name: 'CellTag' },
+      cellRender: {
+        name: 'CellSwitch',
+        attrs: {
+          beforeChange: async (newVal: any, row: SystemMenuApi.SystemMenu) => {
+            await saveMenuApi({ status: newVal }, row.id);
+            return true;
+          },
+        },
+      },
       field: 'status',
       title: $t('system.menu.status'),
       width: 100,
@@ -103,7 +112,7 @@ export function useColumns(
       headerAlign: 'center',
       showOverflow: false,
       title: $t('system.menu.operation'),
-      width: 200,
+      width: 220,
     },
   ];
 }

@@ -111,7 +111,7 @@ export class DrawerApi {
    * @param isLocked 是否锁定
    */
   lock(isLocked: boolean = true) {
-    return this.setState({ submitting: isLocked });
+    return this.setState({ loading: isLocked, submitting: isLocked });
   }
 
   /**

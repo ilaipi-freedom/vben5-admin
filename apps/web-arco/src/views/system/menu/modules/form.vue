@@ -481,6 +481,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 async function onSubmit() {
+  drawerApi.lock();
   const { valid } = await formApi.validate();
   if (valid) {
     loading.value = true;
@@ -502,6 +503,7 @@ async function onSubmit() {
     delete data.linkSrc;
     try {
       await saveMenuApi(data, formData.value?.id);
+      loading.value = false;
       drawerApi.close();
       emit('success');
     } finally {
@@ -512,6 +514,7 @@ async function onSubmit() {
         confirmLoading: false,
         loading: false,
       });
+      drawerApi.unlock();
     }
   }
 }

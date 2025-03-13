@@ -97,21 +97,21 @@ function onAppend(row: SystemMenuApi.SystemMenu) {
 }
 
 function onDelete(row: SystemMenuApi.SystemMenu) {
-  const hideLoading = message.loading({
+  const { close } = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
-    key: 'action_process_msg',
+    id: 'action_process_msg',
   });
   deleteMenuApi(row.id)
     .then(() => {
       message.success({
         content: $t('ui.actionMessage.deleteSuccess', [row.name]),
-        key: 'action_process_msg',
+        id: 'action_process_msg',
       });
       onRefresh();
     })
     .catch(() => {
-      hideLoading();
+      close();
     });
 }
 </script>
