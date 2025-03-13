@@ -81,12 +81,12 @@ setupVbenVxeTable({
         const value = get(row, column.field);
         const tagOptions = options ?? [
           {
-            color: 'success',
+            color: '#00b42a',
             label: $t('common.enabled'),
             value: AvailableStatusEnum.Normal,
           },
           {
-            color: 'error',
+            color: '#f53f3f',
             label: $t('common.disabled'),
             value: AvailableStatusEnum.Forbidden,
           },
