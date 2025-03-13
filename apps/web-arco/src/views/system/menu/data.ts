@@ -7,18 +7,35 @@ import { $t } from '#/locales';
 export function getMenuTypeOptions() {
   return [
     {
-      color: '#165dff',
+      color: 'arcoblue',
       label: $t('system.menu.typeCatalog'),
       value: 'catalog',
+      bordered: true,
     },
-    { color: '#86909c', label: $t('system.menu.typeMenu'), value: 'menu' },
-    { color: '#f53f3f', label: $t('system.menu.typeButton'), value: 'button' },
     {
-      color: '#00b42a',
+      color: 'lime',
+      label: $t('system.menu.typeMenu'),
+      value: 'menu',
+      bordered: true,
+    },
+    {
+      color: 'magenta',
+      label: $t('system.menu.typeButton'),
+      value: 'button',
+      bordered: true,
+    },
+    {
+      color: 'green',
       label: $t('system.menu.typeEmbedded'),
       value: 'embedded',
+      bordered: true,
     },
-    { color: '#ffb400', label: $t('system.menu.typeLink'), value: 'link' },
+    {
+      color: 'gold',
+      label: $t('system.menu.typeLink'),
+      value: 'link',
+      bordered: true,
+    },
   ];
 }
 

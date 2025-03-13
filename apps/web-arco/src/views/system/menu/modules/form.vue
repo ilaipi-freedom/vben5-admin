@@ -12,6 +12,7 @@ import { getPopupContainer } from '@vben/utils';
 
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
+import { message } from '#/adapter/arco';
 import { useVbenForm, z } from '#/adapter/form';
 import {
   getMenuTreeApi,
@@ -521,6 +522,7 @@ async function onSubmit() {
     loading.value = false;
     drawerApi.close();
     emit('success');
+    message.success($t('ui.actionMessage.operationSuccess'));
   } finally {
     loading.value = false;
     drawerApi.setState({

@@ -10,7 +10,7 @@ import { $t } from '@vben/locales';
 
 import { MenuBadge } from '@vben-core/menu-ui';
 
-import { Button } from '@arco-design/web-vue';
+import { Button, Space } from '@arco-design/web-vue';
 
 import { message } from '#/adapter/arco';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -59,6 +59,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
   } as VxeTableGridOptions,
 });
+
+const toggleExpandAll = (expand = true) => {
+  gridApi.grid?.setAllTreeExpand(expand);
+};
 
 function onActionClick({
   code,
@@ -111,7 +115,7 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
       onRefresh();
       setTimeout(() => {
         close();
-      }, 3000);
+      }, 2000);
     })
     .catch(() => {
       close();
@@ -123,10 +127,14 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
     <FormDrawer @success="onRefresh" />
     <Grid>
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
-        </Button>
+        <Space>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
+          </Button>
+          <Button @click="toggleExpandAll(true)"> 全展 </Button>
+          <Button @click="toggleExpandAll(false)"> 全收 </Button>
+        </Space>
       </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
