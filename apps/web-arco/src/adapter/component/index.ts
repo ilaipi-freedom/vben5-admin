@@ -157,9 +157,9 @@ async function initComponentAdapter() {
       return h(
         IconPicker,
         {
-          iconSlot: 'addonAfter',
+          iconSlot: 'append',
           inputComponent: Input,
-          modelValueProp: 'value',
+          modelValueProp: 'modelValue',
           ...props,
           ...attrs,
         },
