@@ -259,7 +259,9 @@ const schema: VbenFormSchema[] = [
     },
     fieldName: 'permission',
     label: $t('system.menu.permission'),
-    rules: z.string(),
+    rules: z
+      .string()
+      .min(2, $t('ui.formRules.minLength', [$t('system.menu.permission'), 3])),
   },
   {
     component: 'RadioGroup',
@@ -493,39 +495,41 @@ const [Drawer, drawerApi] = useVbenDrawer({
 async function onSubmit() {
   drawerApi.lock();
   const { valid } = await formApi.validate();
-  if (valid) {
-    loading.value = true;
+  if (!valid) {
+    drawerApi.unlock();
+    return;
+  }
+  loading.value = true;
+  drawerApi.setState({
+    closeOnClickModal: false,
+    closeOnPressEscape: false,
+    confirmLoading: true,
+    loading: true,
+  });
+  const data =
+    await formApi.getValues<
+      Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>
+    >();
+  if (data.type === 'link') {
+    data.meta = { ...data.meta, link: data.linkSrc };
+  } else if (data.type === 'embedded') {
+    data.meta = { ...data.meta, iframeSrc: data.linkSrc };
+  }
+  delete data.linkSrc;
+  try {
+    await saveMenuApi(data, formData.value?.id);
+    loading.value = false;
+    drawerApi.close();
+    emit('success');
+  } finally {
+    loading.value = false;
     drawerApi.setState({
-      closeOnClickModal: false,
-      closeOnPressEscape: false,
-      confirmLoading: true,
-      loading: true,
+      closeOnClickModal: true,
+      closeOnPressEscape: true,
+      confirmLoading: false,
+      loading: false,
     });
-    const data =
-      await formApi.getValues<
-        Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>
-      >();
-    if (data.type === 'link') {
-      data.meta = { ...data.meta, link: data.linkSrc };
-    } else if (data.type === 'embedded') {
-      data.meta = { ...data.meta, iframeSrc: data.linkSrc };
-    }
-    delete data.linkSrc;
-    try {
-      await saveMenuApi(data, formData.value?.id);
-      loading.value = false;
-      drawerApi.close();
-      emit('success');
-    } finally {
-      loading.value = false;
-      drawerApi.setState({
-        closeOnClickModal: true,
-        closeOnPressEscape: true,
-        confirmLoading: false,
-        loading: false,
-      });
-      drawerApi.unlock();
-    }
+    drawerApi.unlock();
   }
 }
 const getDrawerTitle = computed(() =>
