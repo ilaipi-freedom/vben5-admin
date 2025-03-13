@@ -109,6 +109,9 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
         id: 'action_process_msg',
       });
       onRefresh();
+      setTimeout(() => {
+        close();
+      }, 3000);
     })
     .catch(() => {
       close();
