@@ -20,6 +20,15 @@ const routes: RouteRecordRaw[] = [
           title: $t('system.dept.title'),
         },
       },
+      {
+        path: '/system/menu',
+        name: 'SystemMenu',
+        meta: {
+          icon: 'mdi:menu',
+          title: $t('system.menu.title'),
+        },
+        component: () => import('#/views/system/menu/list.vue'),
+      },
     ],
   },
 ];

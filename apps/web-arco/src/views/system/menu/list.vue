@@ -10,10 +10,15 @@ import { $t } from '@vben/locales';
 
 import { MenuBadge } from '@vben-core/menu-ui';
 
-import { Button, message } from 'ant-design-vue';
+import { Button } from '@arco-design/web-vue';
 
+import { message } from '#/adapter/arco';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteMenu, getMenuList, SystemMenuApi } from '#/api/system/menu';
+import {
+  deleteMenuApi,
+  getMenuTreeApi,
+  SystemMenuApi,
+} from '#/api/system/menu';
 
 import { useColumns } from './data';
 import Form from './modules/form.vue';
@@ -34,7 +39,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getMenuList();
+          return await getMenuTreeApi();
         },
       },
     },
@@ -97,7 +102,7 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteMenu(row.id)
+  deleteMenuApi(row.id)
     .then(() => {
       message.success({
         content: $t('ui.actionMessage.deleteSuccess', [row.name]),

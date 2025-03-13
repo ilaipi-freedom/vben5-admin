@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { ChangeEvent } from 'ant-design-vue/es/_util/EventInterface';
-
 import type { Recordable } from '@vben/types';
 
 import type { VbenFormSchema } from '#/adapter/form';
@@ -16,15 +14,15 @@ import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
 import { useVbenForm, z } from '#/adapter/form';
 import {
-  createMenu,
-  getMenuList,
-  isMenuNameExists,
-  isMenuPathExists,
+  getMenuTreeApi,
+  isMenuNameExistsApi,
+  isMenuPathExistsApi,
+  saveMenuApi,
   SystemMenuApi,
-  updateMenu,
 } from '#/api/system/menu';
 import { $t } from '#/locales';
 import { componentKeys } from '#/router/routes';
+import { AvailableStatusEnum } from '#/typings/common';
 
 import { getMenuTypeOptions } from '../data';
 
@@ -57,7 +55,7 @@ const schema: VbenFormSchema[] = [
       .max(30, $t('ui.formRules.maxLength', [$t('system.menu.menuName'), 30]))
       .refine(
         async (value: string) => {
-          return !(await isMenuNameExists(value, formData.value?.id));
+          return !(await isMenuNameExistsApi(value, formData.value?.id));
         },
         (value) => ({
           message: $t('ui.formRules.alreadyExists', [
@@ -70,7 +68,7 @@ const schema: VbenFormSchema[] = [
   {
     component: 'ApiTreeSelect',
     componentProps: {
-      api: getMenuList,
+      api: getMenuTreeApi,
       class: 'w-full',
       filterTreeNode(input: string, node: Recordable<any>) {
         if (!input || input.length === 0) {
@@ -87,7 +85,7 @@ const schema: VbenFormSchema[] = [
       valueField: 'id',
       childrenField: 'children',
     },
-    fieldName: 'pid',
+    fieldName: 'parentMenuId',
     label: $t('system.menu.parent'),
     renderComponentContent() {
       return {
@@ -108,9 +106,9 @@ const schema: VbenFormSchema[] = [
     componentProps() {
       // 不需要处理多语言时就无需这么做
       return {
-        addonAfter: titleSuffix.value,
-        onChange({ target: { value } }: ChangeEvent) {
-          titleSuffix.value = value && $te(value) ? $t(value) : undefined;
+        append: titleSuffix.value,
+        onChange(val: string) {
+          titleSuffix.value = val && $te(val) ? $t(val) : undefined;
         },
       };
     },
@@ -140,7 +138,7 @@ const schema: VbenFormSchema[] = [
       )
       .refine(
         async (value: string) => {
-          return !(await isMenuPathExists(value, formData.value?.id));
+          return !(await isMenuPathExistsApi(value, formData.value?.id));
         },
         (value) => ({
           message: $t('ui.formRules.alreadyExists', [
@@ -172,7 +170,7 @@ const schema: VbenFormSchema[] = [
         $t('ui.formRules.startWith', [$t('system.menu.path'), '/']),
       )
       .refine(async (value: string) => {
-        return await isMenuPathExists(value, formData.value?.id);
+        return await isMenuPathExistsApi(value, formData.value?.id);
       }, $t('system.menu.activePathMustExist'))
       .optional(),
   },
@@ -249,20 +247,21 @@ const schema: VbenFormSchema[] = [
       },
       triggerFields: ['type'],
     },
-    fieldName: 'authCode',
-    label: $t('system.menu.authCode'),
+    fieldName: 'permission',
+    label: $t('system.menu.permission'),
+    rules: z.string(),
   },
   {
     component: 'RadioGroup',
     componentProps: {
       buttonStyle: 'solid',
       options: [
-        { label: $t('common.enabled'), value: 1 },
-        { label: $t('common.disabled'), value: 0 },
+        { label: $t('common.enabled'), value: AvailableStatusEnum.Normal },
+        { label: $t('common.disabled'), value: AvailableStatusEnum.Forbidden },
       ],
       optionType: 'button',
     },
-    defaultValue: 1,
+    defaultValue: AvailableStatusEnum.Normal,
     fieldName: 'status',
     label: $t('system.menu.status'),
   },
@@ -321,6 +320,16 @@ const schema: VbenFormSchema[] = [
     },
     fieldName: 'meta.badgeVariants',
     label: $t('system.menu.badgeVariants'),
+  },
+  {
+    component: 'InputNumber',
+    fieldName: 'orderNo',
+    componentProps: {
+      allowClear: true,
+      class: 'w-full',
+    },
+    label: $t('system.menu.orderNo'),
+    rules: z.number().optional(),
   },
   {
     component: 'Divider',
@@ -492,9 +501,7 @@ async function onSubmit() {
     }
     delete data.linkSrc;
     try {
-      await (formData.value?.id
-        ? updateMenu(formData.value.id, data)
-        : createMenu(data));
+      await saveMenuApi(data, formData.value?.id);
       drawerApi.close();
       emit('success');
     } finally {

@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@arco-design/web-vue": "catalog:",
+    "@tanstack/vue-query": "catalog:",
+    "@vben-core/menu-ui": "workspace:*",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",

@@ -13,7 +13,7 @@ import { IconifyIcon } from '@vben/icons';
 import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuList } from '#/api/system/menu';
+import { getMenuTreeApi } from '#/api/system/menu';
 import { createRole, updateRole } from '#/api/system/role';
 import { $t } from '#/locales';
 
@@ -69,7 +69,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 async function loadPermissions() {
   loadingPermissions.value = true;
   try {
-    const res = await getMenuList();
+    const res = await getMenuTreeApi();
     permissions.value = res as unknown as DataNode[];
   } finally {
     loadingPermissions.value = false;

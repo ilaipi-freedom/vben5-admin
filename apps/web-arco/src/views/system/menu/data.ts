@@ -42,8 +42,8 @@ export function useColumns(
       width: 100,
     },
     {
-      field: 'authCode',
-      title: $t('system.menu.authCode'),
+      field: 'permission',
+      title: $t('system.menu.permission'),
       width: 200,
     },
     {
