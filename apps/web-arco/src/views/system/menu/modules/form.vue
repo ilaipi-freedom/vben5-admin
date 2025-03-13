@@ -80,7 +80,7 @@ const schema: VbenFormSchema[] = [
       },
       getPopupContainer,
       labelField: 'meta.title',
-      showSearch: true,
+      allowSearch: true,
       treeDefaultExpandAll: true,
       valueField: 'id',
       childrenField: 'children',
@@ -89,7 +89,17 @@ const schema: VbenFormSchema[] = [
     label: $t('system.menu.parent'),
     renderComponentContent() {
       return {
-        title({ label, meta }: { label: string; meta: Recordable<any> }) {
+        label(option: { data: { label?: string } }) {
+          if (!option || !option.data?.label) return '';
+          return $t(option.data.label || '');
+        },
+        'tree-slot-title': function ({
+          label,
+          meta,
+        }: {
+          label: string;
+          meta: Recordable<any>;
+        }) {
           const coms = [];
           if (!label) return '';
           if (meta?.icon) {
