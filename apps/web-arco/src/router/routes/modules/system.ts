@@ -38,6 +38,15 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('#/views/system/role/list.vue'),
       },
+      {
+        path: '/system/permission',
+        name: 'SystemRolePermission',
+        meta: {
+          icon: 'mdi:account-group',
+          title: $t('system.permission.title'),
+        },
+        component: () => import('#/views/system/permission/index.vue'),
+      },
     ],
   },
 ];

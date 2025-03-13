@@ -69,5 +69,8 @@
     "route": "默认路由",
     "permMin": "权限标识至少2个字符",
     "routeMin": "默认路由至少2个字符"
+  },
+  "permission": {
+    "title": "权限控制"
   }
 }

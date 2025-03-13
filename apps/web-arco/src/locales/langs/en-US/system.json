@@ -68,5 +68,8 @@
     "route": "Default Route",
     "permMin": "Permission must be at least 2 characters",
     "routeMin": "Default route must be at least 2 characters"
+  },
+  "permission": {
+    "title": "Permission Control"
   }
 }

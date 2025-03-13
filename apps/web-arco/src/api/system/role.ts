@@ -45,4 +45,8 @@ async function deleteRoleApi(id: string) {
   return requestClient.delete(`/role/${id}`);
 }
 
-export { deleteRoleApi, getRoleListApi, saveRoleApi };
+async function saveRolePermApi(roleId: string, perms: string[] = []) {
+  return requestClient.put(`/role/updatePerm/${roleId}`, { perms });
+}
+
+export { deleteRoleApi, getRoleListApi, saveRoleApi, saveRolePermApi };
