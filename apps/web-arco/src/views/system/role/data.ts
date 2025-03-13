@@ -1,8 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api';
+import type { SystemRoleApi } from '#/api/system/role';
 
+import { z } from '#/adapter/form';
 import { $t } from '#/locales';
+import { AvailableStatusEnum } from '#/typings/common';
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -13,16 +15,33 @@ export function useFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
+      component: 'Input',
+      fieldName: 'perm',
+      label: $t('system.role.perm'),
+      modelPropName: 'modelValue',
+      rules: z.string().min(2, $t('system.role.permMin')),
+    },
+    {
+      component: 'Input',
+      fieldName: 'route',
+      label: $t('system.role.route'),
+      modelPropName: 'modelValue',
+      rules: z.string().min(2, $t('system.role.routeMin')).optional(),
+    },
+    {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: AvailableStatusEnum.Normal },
+          {
+            label: $t('common.disabled'),
+            value: AvailableStatusEnum.Forbidden,
+          },
         ],
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: AvailableStatusEnum.Normal,
       fieldName: 'status',
       label: $t('system.role.status'),
     },
@@ -31,13 +50,6 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'remark',
       label: $t('system.role.remark'),
     },
-    {
-      component: 'Input',
-      fieldName: 'permissions',
-      formItemClass: 'items-start',
-      label: $t('system.role.setPermissions'),
-      modelPropName: 'modelValue',
-    },
   ];
 }
 
@@ -45,31 +57,23 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'q',
       label: $t('system.role.roleName'),
     },
-    { component: 'Input', fieldName: 'id', label: $t('system.role.id') },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
         options: [
-          { label: $t('common.enabled'), value: 1 },
-          { label: $t('common.disabled'), value: 0 },
+          { label: $t('common.enabled'), value: AvailableStatusEnum.Normal },
+          {
+            label: $t('common.disabled'),
+            value: AvailableStatusEnum.Forbidden,
+          },
         ],
       },
       fieldName: 'status',
       label: $t('system.role.status'),
-    },
-    {
-      component: 'Input',
-      fieldName: 'remark',
-      label: $t('system.role.remark'),
-    },
-    {
-      component: 'RangePicker',
-      fieldName: 'createTime',
-      label: $t('system.role.createTime'),
     },
   ];
 }
@@ -85,8 +89,13 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       width: 200,
     },
     {
-      field: 'id',
-      title: $t('system.role.id'),
+      field: 'perm',
+      title: $t('system.role.perm'),
+      width: 200,
+    },
+    {
+      field: 'route',
+      title: $t('system.role.route'),
       width: 200,
     },
     {
@@ -104,7 +113,7 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       title: $t('system.role.remark'),
     },
     {
-      field: 'createTime',
+      field: 'createdAt',
       title: $t('system.role.createTime'),
       width: 200,
     },

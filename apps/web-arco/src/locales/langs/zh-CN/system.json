@@ -64,6 +64,10 @@
     "createTime": "创建时间",
     "operation": "操作",
     "permissions": "权限",
-    "setPermissions": "授权"
+    "setPermissions": "授权",
+    "perm": "权限标识",
+    "route": "默认路由",
+    "permMin": "权限标识至少2个字符",
+    "routeMin": "默认路由至少2个字符"
   }
 }

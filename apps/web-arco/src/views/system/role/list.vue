@@ -1,20 +1,21 @@
 <script lang="ts" setup>
-import type { Recordable } from '@vben/types';
-
 import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api';
+import type { SystemRoleApi } from '#/api/system/role';
+import type { AvailableStatusEnum } from '#/constants';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Button, Modal } from '@arco-design/web-vue';
 
+import { message } from '#/adapter/arco';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRoleList, updateRole } from '#/api';
+import { deleteRoleApi, getRoleListApi, saveRoleApi } from '#/api/system/role';
 import { $t } from '#/locales';
+import { AvailableStatusMap } from '#/typings/common';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -37,7 +38,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getRoleList({
+          return await getRoleListApi({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -99,19 +100,16 @@ function confirm(content: string, title: string) {
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
 async function onStatusChange(
-  newStatus: number,
+  newStatus: AvailableStatusEnum,
   row: SystemRoleApi.SystemRole,
 ) {
-  const status: Recordable<string> = {
-    0: '禁用',
-    1: '启用',
-  };
+  const status = AvailableStatusMap;
   try {
     await confirm(
-      `你要将${row.name}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
+      `你要将${row.name}的状态切换为 【${status[newStatus]}】 吗？`,
       `切换状态`,
     );
-    await updateRole(row.id, { status: newStatus });
+    await saveRoleApi({ status: newStatus }, row.id);
     return true;
   } catch {
     return false;
@@ -123,21 +121,24 @@ function onEdit(row: SystemRoleApi.SystemRole) {
 }
 
 function onDelete(row: SystemRoleApi.SystemRole) {
-  const hideLoading = message.loading({
+  const { close } = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
-    key: 'action_process_msg',
+    id: 'action_process_msg',
   });
-  deleteRole(row.id)
+  deleteRoleApi(row.id)
     .then(() => {
       message.success({
         content: $t('ui.actionMessage.deleteSuccess', [row.name]),
-        key: 'action_process_msg',
+        id: 'action_process_msg',
       });
       onRefresh();
+      setTimeout(() => {
+        close();
+      }, 2000);
     })
     .catch(() => {
-      hideLoading();
+      close();
     });
 }
 
@@ -151,7 +152,7 @@ function onCreate() {
 </script>
 <template>
   <Page auto-content-height>
-    <FormDrawer />
+    <FormDrawer @success="onRefresh" />
     <Grid :table-title="$t('system.role.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">
