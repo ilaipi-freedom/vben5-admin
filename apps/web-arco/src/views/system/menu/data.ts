@@ -60,6 +60,12 @@ export function useColumns(
       width: 100,
     },
     {
+      align: 'center',
+      field: 'orderNo',
+      title: $t('system.menu.orderNo'),
+      width: 80,
+    },
+    {
       field: 'permission',
       title: $t('system.menu.permission'),
       width: 200,

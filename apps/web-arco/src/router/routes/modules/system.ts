@@ -12,8 +12,8 @@ const routes: RouteRecordRaw[] = [
     path: '/system',
     children: [
       {
-        name: 'Dept',
-        path: 'dept',
+        name: 'SystemDept',
+        path: '/system/dept',
         component: () => import('#/views/system/dept/list.vue'),
         meta: {
           icon: 'lucide:network',

@@ -61,11 +61,12 @@ const gridOptions: VxeGridProps = {
       title: '操作',
       fixed: 'right',
       slots: { default: 'action' },
+      width: 230,
     },
   ],
   rowConfig: {
     isHover: true,
-    height: 80,
+    height: 50,
   },
   toolbarConfig: {
     refresh: false,

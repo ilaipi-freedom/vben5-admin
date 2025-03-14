@@ -10,6 +10,7 @@ import { defineStore } from 'pinia';
 
 import { notification } from '#/adapter/arco';
 import { getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { getPermBtnCodesApi } from '#/api/system/account';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -45,9 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
         userInfo.homePath = userInfo?.role?.route;
         const userRoles = userInfo?.role?.perm ? [userInfo?.role?.perm] : [];
         userStore.setUserRoles(userRoles);
-        accessStore.setAccessCodes(userRoles);
         userStore.setUserInfo(userInfo);
-        accessStore.setIsAccessChecked(false);
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
@@ -96,10 +95,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchUserInfo() {
-    let userInfo: null | UserInfo = null;
-    userInfo = await getUserInfoApi();
+    const [fetchUserInfoResult, accessCodes] = await Promise.all([
+      getUserInfoApi(),
+      getPermBtnCodesApi(),
+    ]);
+    const userInfo: null | UserInfo = fetchUserInfoResult;
     userInfo.realName = userInfo?.realName || userInfo?.name || '';
     userStore.setUserInfo(userInfo);
+    accessStore.setAccessCodes(accessCodes);
+    accessStore.setIsAccessChecked(false);
     return userInfo;
   }
 

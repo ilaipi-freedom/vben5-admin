@@ -24,6 +24,10 @@ export function getPermCodeByRoleApi(roleId: string) {
   return requestClient.get<string[]>(`${prefix}/permCode/${roleId}`);
 }
 
+export function getPermBtnCodesApi() {
+  return requestClient.get<string[]>(`${prefix}/permBtnCodes`);
+}
+
 /**
  * 保存账户
  */

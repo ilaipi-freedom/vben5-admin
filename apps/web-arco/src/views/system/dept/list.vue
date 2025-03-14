@@ -5,6 +5,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
+import { AccessControl } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -108,6 +109,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
     pagerConfig: {
       enabled: false,
     },
+    rowConfig: {
+      isHover: true,
+      height: 50,
+    },
     proxyConfig: {
       ajax: {
         query: async (_params) => {
@@ -142,10 +147,12 @@ function refreshGrid() {
     <Grid table-title="部门列表">
       <template #toolbar-tools>
         <Space>
-          <Button type="primary" @click="onCreate">
-            <Plus class="size-5" />
-            {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}
-          </Button>
+          <AccessControl :codes="['system:dept:list:add']" type="code">
+            <Button type="primary" @click="onCreate">
+              <Plus class="size-5" />
+              {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}
+            </Button>
+          </AccessControl>
           <Button @click="toggleExpandAll(true)"> 全展 </Button>
           <Button @click="toggleExpandAll(false)"> 全收 </Button>
         </Space>

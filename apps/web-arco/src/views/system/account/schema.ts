@@ -63,9 +63,9 @@ export const accountFormSchema = () => [
 export const accountSearchFormSchema = () => [
   {
     component: 'Input',
-    fieldName: 'keyword',
+    fieldName: 'q',
     label: '搜索',
-    help: '模糊匹配：用户名/手机号',
+    help: '模糊匹配：用户名/手机号/姓名',
     typeName: 'string',
     defaultValue: '',
   },

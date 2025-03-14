@@ -4,10 +4,14 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
+import { useAccess } from '@vben/access';
+
 import { z } from '#/adapter/form';
 import { getDeptTreeApi, saveDeptApi } from '#/api/system/dept';
 import { $t } from '#/locales';
 import { AvailableStatusEnum } from '#/typings/common';
+
+const { hasAccessByCodes } = useAccess();
 
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
@@ -148,14 +152,18 @@ export function useColumns(
             code: 'append',
             text: $t('system.dept.append'),
           },
-          'edit', // 默认的编辑按钮
-          {
-            code: 'delete', // 默认的删除按钮
-            status: 'danger',
-            disabled: (row: SystemDeptApi.DeptItem) => {
-              return !!(row.children && row.children.length > 0);
-            },
-          },
+          ...(hasAccessByCodes(['system:dept:list:edit']) ? ['edit'] : []),
+          ...(hasAccessByCodes(['system:dept:list:delete'])
+            ? [
+                {
+                  code: 'delete', // 默认的删除按钮
+                  status: 'danger',
+                  disabled: (row: SystemDeptApi.DeptItem) => {
+                    return !!(row.children && row.children.length > 0);
+                  },
+                },
+              ]
+            : []),
         ],
       },
       field: 'operation',

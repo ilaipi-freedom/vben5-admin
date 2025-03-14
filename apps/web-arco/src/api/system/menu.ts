@@ -97,6 +97,15 @@ async function getMenuTreeApi() {
   return requestClient.get<Array<SystemMenuApi.SystemMenu>>('/sys-menu/tree');
 }
 
+/**
+ * 获取菜单数据列表
+ */
+async function getUserMenuTreeApi() {
+  return requestClient.get<Array<SystemMenuApi.SystemMenu>>(
+    '/sys-menu/user-tree',
+  );
+}
+
 async function isMenuNameExistsApi(
   name: string,
   id?: SystemMenuApi.SystemMenu['id'],
@@ -140,6 +149,7 @@ async function deleteMenuApi(id: string) {
 export {
   deleteMenuApi,
   getMenuTreeApi,
+  getUserMenuTreeApi,
   isMenuNameExistsApi,
   isMenuPathExistsApi,
   saveMenuApi,

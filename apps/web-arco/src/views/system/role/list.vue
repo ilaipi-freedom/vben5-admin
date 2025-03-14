@@ -30,6 +30,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
+    showCollapseButton: false,
+    actionButtonsReverse: true,
   },
   gridOptions: {
     columns: useColumns(onActionClick, onStatusChange),
@@ -48,6 +50,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
     rowConfig: {
       keyField: 'id',
+      isHover: true,
+      height: 50,
     },
 
     toolbarConfig: {

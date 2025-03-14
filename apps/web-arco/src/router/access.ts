@@ -1,13 +1,14 @@
 import type {
   ComponentRecordType,
   GenerateMenuAndRoutesOptions,
+  RouteRecordStringComponent,
 } from '@vben/types';
 
 import { generateAccessible } from '@vben/access';
 import { preferences } from '@vben/preferences';
 
 import { message } from '#/adapter/arco';
-import { getAllMenusApi } from '#/api';
+import { getUserMenuTreeApi } from '#/api/system/menu';
 import { BasicLayout, IFrameView } from '#/layouts';
 import { $t } from '#/locales';
 
@@ -25,7 +26,9 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
     ...options,
     fetchMenuListAsync: async () => {
       message.loading(`${$t('common.loadingMenu')}...`);
-      return await getAllMenusApi();
+      const menuTree = await getUserMenuTreeApi();
+      message.clear();
+      return menuTree as RouteRecordStringComponent[];
     },
     // 可以指定没有权限跳转403页面
     forbiddenComponent,
