@@ -3,7 +3,7 @@ name: Docker Image CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 jobs:
  
@@ -45,10 +45,15 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_HUB_SPACE }}/${{ vars.DOCKER_IMAGE_NAME }}-dev:latest
 
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@v1.0.0
-        env:
-          INPUT_DOCKER_CONTAINER_NAME: ${{ vars.DOCKER_CONTAINER_NAME }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -57,7 +62,7 @@ jobs:
           allenvs: true
           script: |
             echo -n "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin ${{ secrets.DOCKER_REGISTRY }}
+            docker pull ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_HUB_SPACE }}/${{ vars.DOCKER_IMAGE_NAME }}
 
-            cd /home/ubuntu/yunkong
-
-            docker compose up -d --pull always dev_admin_front
+            cd /home/billy/freedom
+            docker compose up -d
