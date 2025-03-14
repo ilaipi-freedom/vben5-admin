@@ -72,5 +72,11 @@
   },
   "permission": {
     "title": "权限控制"
+  },
+  "account": {
+    "title": "账户管理",
+    "list": "账户列表",
+    "name": "账户",
+    "accountName": "账户名称"
   }
 }

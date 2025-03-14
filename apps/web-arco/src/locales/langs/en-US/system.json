@@ -71,5 +71,11 @@
   },
   "permission": {
     "title": "Permission Control"
+  },
+  "account": {
+    "title": "Account Management",
+    "list": "Account List",
+    "name": "Account",
+    "accountName": "Account Name"
   }
 }

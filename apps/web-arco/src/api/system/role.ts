@@ -1,5 +1,7 @@
 import type { Recordable } from '@vben/types';
 
+import type { ListItemsTotalType } from '#/typings/common';
+
 import { requestClient } from '#/api/request';
 import { AvailableStatusEnum } from '#/typings/common';
 
@@ -17,9 +19,12 @@ export namespace SystemRoleApi {
  * 获取角色列表数据
  */
 async function getRoleListApi(params: Recordable<any>) {
-  return requestClient.get<Array<SystemRoleApi.SystemRole>>('/role/list', {
-    params,
-  });
+  return requestClient.get<ListItemsTotalType<SystemRoleApi.SystemRole>>(
+    '/role/list',
+    {
+      params,
+    },
+  );
 }
 
 /**
