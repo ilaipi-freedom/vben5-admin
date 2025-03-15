@@ -4,7 +4,7 @@ import type { SystemDictApi } from '#/api/system/sys-dict';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { Alert, Popconfirm, Space, Tooltip } from '@arco-design/web-vue';
+import { Alert, Button, Popconfirm, Tooltip } from '@arco-design/web-vue';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-vue/es/icon';
 
 import { message } from '#/adapter/arco';
@@ -110,32 +110,30 @@ function refreshGrid() {
         </Alert>
       </template>
       <template #action="{ row }">
-        <Space>
-          <Tooltip
-            :content="
-              $t('ui.actionTitle.edit', [$t('system.sysDict.type.title')])
-            "
+        <Tooltip
+          :content="
+            $t('ui.actionTitle.edit', [$t('system.sysDict.type.title')])
+          "
+        >
+          <Button type="text" @click="handleEdit(row)" size="mini">
+            <IconEdit />
+          </Button>
+        </Tooltip>
+        <Tooltip
+          :content="
+            $t('ui.actionTitle.delete', [$t('system.sysDict.type.title')])
+          "
+          position="bottom"
+        >
+          <Popconfirm
+            :content="`${$t('ui.actionTitle.delete', [$t('system.sysDict.type.title')])}?`"
+            @ok="handleDelete(row)"
           >
-            <Button type="text" @click="handleEdit(row)" size="mini">
-              <IconEdit />
+            <Button type="text" status="danger" size="mini">
+              <IconDelete />
             </Button>
-          </Tooltip>
-          <Tooltip
-            :content="
-              $t('ui.actionTitle.delete', [$t('system.sysDict.type.title')])
-            "
-            position="bottom"
-          >
-            <Popconfirm
-              :content="`${$t('ui.actionTitle.delete', [$t('system.sysDict.type.title')])}?`"
-              @ok="handleDelete(row)"
-            >
-              <Button type="text" status="danger" size="mini">
-                <IconDelete />
-              </Button>
-            </Popconfirm>
-          </Tooltip>
-        </Space>
+          </Popconfirm>
+        </Tooltip>
       </template>
       <template #toolbar-tools>
         <Tooltip

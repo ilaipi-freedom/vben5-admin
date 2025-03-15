@@ -86,7 +86,20 @@
     "title": "字典管理",
     "type": {
       "title": "字典类型",
-      "add": "新增字典类型"
+      "name": "类型名称",
+      "code": "类型编码",
+      "status": "状态",
+      "remark": "备注"
+    },
+    "data": {
+      "title": "字典数据",
+      "label": "标签",
+      "key": "字典键",
+      "value": "字典值",
+      "status": "状态",
+      "remark": "备注",
+      "extra": "扩展字段",
+      "sort": "排序"
     }
   }
 }

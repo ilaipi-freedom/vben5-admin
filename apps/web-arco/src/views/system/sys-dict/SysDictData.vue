@@ -1,129 +1,158 @@
 <script lang="ts" setup>
-// 由于找不到ant-design-vue/es/tree模块，我们可以定义自己的DataNode接口
-import type { Recordable } from '@vben/types';
+import type {
+  OnActionClickParams,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
+import type { SystemDictApi } from '#/api/system/sys-dict';
+import type { SystemDictDataApi } from '#/api/system/sys-dict/data';
 
-import type { SystemRoleApi } from '#/api/system/role';
+import { watch } from 'vue';
 
-import { ref, watch } from 'vue';
+import { useVbenModal } from '@vben/common-ui';
 
-import { VbenTree } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
+import { Alert, Button } from '@arco-design/web-vue';
+import { IconPlus } from '@arco-design/web-vue/es/icon';
 
-import { Button, Card, Space } from '@arco-design/web-vue';
+import { message } from '#/adapter/arco';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {
+  deleteSysDictDataApi,
+  getSysDictDataListApi,
+} from '#/api/system/sys-dict/data';
+import { $t } from '#/locales';
 
-import { notification } from '#/adapter/arco';
-import { useVbenForm } from '#/adapter/form';
-import { getMenuTreeApi, SystemMenuApi } from '#/api/system/menu';
-import { saveRolePermApi } from '#/api/system/role';
-
-import { usePermissionFormSchema } from './data';
+import DictDataModalComp from './components/DictDataModal.vue';
+import { useSysDictDataListColumns } from './data';
 
 const props = defineProps<{
-  checkedCodes?: string[];
-  selectedRole?: SystemRoleApi.SystemRole;
+  selectedDict?: SystemDictApi.SystemDict;
 }>();
 
-const treeData = ref<SystemMenuApi.SystemMenu[]>([]);
-const [Form, formApi] = useVbenForm({
-  schema: usePermissionFormSchema(),
-  showDefaultActions: false,
-  commonConfig: {
-    hideLabel: true,
-  },
+const [DictDataModal, modalApi] = useVbenModal({
+  connectedComponent: DictDataModalComp,
 });
 
-// 添加对VbenTree组件的引用
-const treeRef = ref();
+const [Grid, gridApi] = useVbenVxeGrid({
+  gridOptions: {
+    columns: useSysDictDataListColumns(handleActionClick),
+    height: 'auto',
+    keepSource: true,
+    rowClassName: 'h-[60px]',
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await getSysDictDataListApi({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            ...formValues,
+            ...(props.selectedDict?.id
+              ? { type: props.selectedDict.type }
+              : {}),
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+      isCurrent: true,
+      isHover: true,
+    },
+    pagerConfig: {
+      pageSize: 20,
+      layouts: ['PrevPage', 'Number', 'NextPage'],
+      autoHidden: true,
+    },
+    toolbarConfig: {
+      custom: false,
+      export: false,
+      refresh: { code: 'query' },
+      search: false,
+      zoom: false,
+    },
+  } as VxeTableGridOptions<SystemDictDataApi.SystemDictData>,
+});
 
-// 添加调用collapseAll方法的函数
-const handleCollapseAll = () => {
-  treeRef.value?.[0]?.collapseAll();
+const handleAdd = () => {
+  modalApi
+    .setData({
+      sysDict: props.selectedDict,
+    })
+    .open();
 };
-
-const handleExpandAll = () => {
-  treeRef.value?.[0]?.expandAll();
-};
-
-const fetchMenuList = async () => {
-  const list = await getMenuTreeApi();
-  treeData.value = list;
-};
-
-fetchMenuList();
-
-// 保存权限设置
-const save = async () => {
-  const { permissions } = await formApi.getValues();
-  if (props.selectedRole?.id) {
-    await saveRolePermApi(props.selectedRole.id, permissions);
-    notification.success({
-      title: '权限配置保存成功',
-      content: '请提醒用户刷新后生效',
-    });
-  }
-};
-
-function getNodeClass(node: Recordable<any>) {
-  const classes: string[] = [];
-  if (node.value?.type === 'button') {
-    classes.push('inline-flex');
-    if (node.index % 3 >= 1) {
-      classes.push('!pl-0');
-    }
-  }
-
-  return classes.join(' ');
-}
 
 watch(
-  () => props.selectedRole?.id,
+  () => props.selectedDict?.id,
   (id) => {
     if (id) {
-      formApi.setValues({
-        permissions: props.checkedCodes,
-      });
+      gridApi.reload();
     }
   },
 );
+
+function refreshGrid() {
+  gridApi.reload();
+}
+
+async function handleActionClick(
+  params: OnActionClickParams<SystemDictDataApi.SystemDictData>,
+) {
+  switch (params.code) {
+    case 'delete': {
+      await deleteSysDictDataApi(params.row.id);
+      message.success($t('ui.actionMessage.deleteSuccess', [params.row.label]));
+      refreshGrid();
+      break;
+    }
+    case 'edit': {
+      modalApi
+        .setData({
+          row: params.row,
+        })
+        .open();
+      break;
+    }
+  }
+}
 </script>
 <template>
-  <Card>
-    <template #extra>
-      <Space>
-        <Button @click="handleExpandAll"> 全展 </Button>
-        <Button @click="handleCollapseAll"> 全收 </Button>
-        <Button type="primary" @click="save" :disabled="!selectedRole?.id">
-          保存设置
-        </Button>
-      </Space>
-    </template>
-    <template #title>
-      <div class="flex items-center gap-2">
-        <div class="text-lg font-bold">配置权限</div>
-        <div class="text-lg font-bold" v-if="selectedRole?.id">
-          ：{{ selectedRole?.name }}({{ selectedRole?.perm }})
-        </div>
-      </div>
-    </template>
-    <Form>
-      <template #permissions="slotProps">
-        <VbenTree
-          ref="treeRef"
-          :tree-data="treeData"
-          :multiple="!!selectedRole?.id"
-          :default-expanded-level="2"
-          :get-node-class="getNodeClass"
-          v-bind="slotProps"
-          value-field="id"
-          label-field="meta.title"
-          icon-field="meta.icon"
-        >
-          <template #node="{ value }">
-            <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
-            {{ $t(value.meta.title) }}
+  <div>
+    <Grid
+      :table-title="
+        [
+          $t('system.sysDict.data.title'),
+          ...(selectedDict?.id ? [selectedDict.name] : []),
+        ].join(' - ')
+      "
+    >
+      <template #toolbar-tools>
+        <Button type="primary" @click="handleAdd" :disabled="!selectedDict?.id">
+          <template #icon>
+            <IconPlus />
           </template>
-        </VbenTree>
+          {{ $t('ui.actionTitle.create') }}
+        </Button>
       </template>
-    </Form>
-  </Card>
+      <template #label="{ row }">
+        <Alert
+          :show-icon="false"
+          :title="row.label"
+          class="custom-alert"
+          type="normal"
+        >
+          {{ row.key }}
+        </Alert>
+      </template>
+    </Grid>
+    <DictDataModal @success="refreshGrid" />
+  </div>
 </template>
+
+<style lang="scss" scoped>
+:deep(.custom-alert) {
+  @apply p-0 px-[5px];
+
+  .arco-alert-title {
+    @apply mb-[-6px];
+  }
+}
+</style>
