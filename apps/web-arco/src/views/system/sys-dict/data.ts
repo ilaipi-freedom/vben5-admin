@@ -51,6 +51,7 @@ export function useSysDictDataListColumns(
       field: 'value',
       title: $t('system.sysDict.data.value'),
       align: 'left',
+      slots: { default: 'value' },
     },
     {
       cellRender: {

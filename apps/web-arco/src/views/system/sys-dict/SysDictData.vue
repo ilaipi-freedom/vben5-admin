@@ -6,16 +6,18 @@ import type {
 import type { SystemDictApi } from '#/api/system/sys-dict';
 import type { SystemDictDataApi } from '#/api/system/sys-dict/data';
 
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
 import { Alert, Button, Input, Tooltip } from '@arco-design/web-vue';
 import {
+  IconCopy,
   IconPlus,
   IconQuestionCircle,
   IconRefresh,
 } from '@arco-design/web-vue/es/icon';
+import { useClipboard } from '@vueuse/core';
 
 import { message } from '#/adapter/arco';
 import { useVbenForm } from '#/adapter/form';
@@ -32,6 +34,9 @@ import { useSysDictDataListColumns } from './data';
 const props = defineProps<{
   selectedDict?: SystemDictApi.SystemDict;
 }>();
+
+const copySource = ref('');
+const { copy: copyText } = useClipboard({ legacy: true, source: copySource });
 
 const [SearchForm, searchFormApi] = useVbenForm({
   schema: [
@@ -135,6 +140,12 @@ async function handleActionClick(
     }
   }
 }
+
+const handleCopy = (value: string) => {
+  copySource.value = value;
+  copyText();
+  message.success($t('ui.jsonViewer.copied'));
+};
 </script>
 <template>
   <div>
@@ -195,6 +206,21 @@ async function handleActionClick(
         >
           {{ row.key }}
         </Alert>
+      </template>
+      <template #value="{ row }">
+        <div class="flex justify-between">
+          <div>{{ row.value }}</div>
+          <div>
+            <Button
+              type="text"
+              status="normal"
+              size="mini"
+              @click="() => handleCopy(row.value)"
+            >
+              <IconCopy />
+            </Button>
+          </div>
+        </div>
       </template>
     </Grid>
     <DictDataModal @success="refreshGrid" />
