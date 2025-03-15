@@ -76,6 +76,29 @@
     "title": "Account Management",
     "list": "Account List",
     "name": "Account",
-    "accountName": "Account Name"
+    "accountName": "Account Name",
+    "permission": {
+      "title": "Permission Management"
+    }
+  },
+  "sysDict": {
+    "title": "Dictionary Management",
+    "type": {
+      "title": "Dictionary Type",
+      "name": "Type Name",
+      "code": "Type Code",
+      "status": "Status",
+      "remark": "Remark"
+    },
+    "data": {
+      "title": "Dictionary Data",
+      "label": "Label",
+      "key": "Key",
+      "value": "Value",
+      "status": "Status",
+      "remark": "Remark",
+      "extra": "Extra",
+      "sort": "Sort"
+    }
   }
 }

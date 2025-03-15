@@ -8,6 +8,7 @@ import { Alert, Button, Popconfirm, Tooltip } from '@arco-design/web-vue';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-vue/es/icon';
 
 import { message } from '#/adapter/arco';
+import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteSysDictApi, getSysDictListApi } from '#/api/system/sys-dict';
 import { $t } from '#/locales';
@@ -19,32 +20,39 @@ defineOptions({ name: 'SysDictList' });
 
 const emit = defineEmits(['select']);
 
-const [Grid, gridApi] = useVbenVxeGrid({
-  formOptions: {
-    collapsed: false,
-    showCollapseButton: false,
-    submitOnEnter: true,
-    schema: useSysDictListGridFormSchema(),
-    submitOnChange: true,
-    showDefaultActions: false,
-    wrapperClass: 'grid grid-cols-1',
+const [SearchForm, searchFormApi] = useVbenForm({
+  layout: 'horizontal',
+  schema: useSysDictListGridFormSchema(),
+  showDefaultActions: false,
+  submitOnEnter: true,
+  commonConfig: {
+    formItemClass: 'pb-0',
   },
+  handleSubmit: refreshGrid,
+});
+
+const [Grid, gridApi] = useVbenVxeGrid({
   gridEvents: {
     currentChange: ({ row }: { row: SystemDictApi.SystemDict }) => {
       emit('select', row);
     },
   },
+  showSearchForm: false,
   gridOptions: {
     columns: useSysDictListColumns(),
     height: 'auto',
     keepSource: true,
+    formConfig: {
+      enabled: false,
+    },
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async ({ page }) => {
+          const searchFormValue = await searchFormApi.getValues();
           return await getSysDictListApi({
             page: page.currentPage,
             pageSize: page.pageSize,
-            ...formValues,
+            ...searchFormValue,
           });
         },
       },
@@ -96,7 +104,7 @@ function refreshGrid() {
 
 <template>
   <div>
-    <Grid :table-title="$t('system.sysDict.type.title')">
+    <Grid>
       <template #name="{ row }">
         <Alert
           :type="
@@ -135,18 +143,23 @@ function refreshGrid() {
           </Popconfirm>
         </Tooltip>
       </template>
-      <template #toolbar-tools>
-        <Tooltip
-          :content="
-            $t('ui.actionTitle.create', [$t('system.sysDict.type.title')])
-          "
-        >
-          <Button type="primary" @click="handleAdd">
-            <template #icon>
-              <IconPlus />
-            </template>
-          </Button>
-        </Tooltip>
+      <template #toolbar-actions>
+        <div class="flex w-full">
+          <SearchForm class="flex-1" />
+          <div class="flex w-[70px] justify-end">
+            <Tooltip
+              :content="
+                $t('ui.actionTitle.create', [$t('system.sysDict.type.title')])
+              "
+            >
+              <Button type="primary" @click="handleAdd">
+                <template #icon>
+                  <IconPlus />
+                </template>
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
       </template>
     </Grid>
 
