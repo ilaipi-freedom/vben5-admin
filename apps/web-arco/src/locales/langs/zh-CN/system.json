@@ -81,5 +81,12 @@
     "permission": {
       "title": "权限管理"
     }
+  },
+  "sysDict": {
+    "title": "字典管理",
+    "type": {
+      "title": "字典类型",
+      "add": "新增字典类型"
+    }
   }
 }

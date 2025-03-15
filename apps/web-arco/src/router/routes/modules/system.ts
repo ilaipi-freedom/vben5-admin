@@ -65,6 +65,14 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      {
+        name: 'SysDict',
+        path: '/system/sys-dict',
+        meta: {
+          title: $t('system.sysDict.title'),
+        },
+        component: () => import('#/views/system/sys-dict/index.vue'),
+      },
     ],
   },
 ];

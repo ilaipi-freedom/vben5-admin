@@ -32,6 +32,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     columns: useRoleListColumns(),
     height: 'auto',
     keepSource: true,
+    rowClassName: 'cursor-pointer',
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {

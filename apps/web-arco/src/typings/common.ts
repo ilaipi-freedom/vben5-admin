@@ -12,3 +12,8 @@ export type ListItemsTotalType<T> = {
   items: T[];
   total: number;
 };
+
+export type BasePageQuery = {
+  page?: number;
+  pageSize?: number;
+};
