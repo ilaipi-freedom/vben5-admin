@@ -7,19 +7,6 @@ import { saveSysDictApi } from '#/api/system/sys-dict';
 import { saveSysDictDataApi } from '#/api/system/sys-dict/data';
 import { $t } from '#/locales';
 
-export function useSysDictListGridFormSchema(): VbenFormSchema[] {
-  return [
-    {
-      component: 'Input',
-      fieldName: 'q',
-      label: '搜索',
-      help: '模糊匹配名称、类型',
-      labelClass: 'justify-start',
-      labelWidth: 50,
-    },
-  ];
-}
-
 export function useSysDictListColumns(): VxeTableGridOptions['columns'] {
   return [
     {

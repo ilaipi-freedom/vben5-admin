@@ -4,8 +4,20 @@ import type { SystemDictApi } from '#/api/system/sys-dict';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { Alert, Button, Popconfirm, Tooltip } from '@arco-design/web-vue';
-import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-vue/es/icon';
+import {
+  Alert,
+  Button,
+  Input,
+  Popconfirm,
+  Tooltip,
+} from '@arco-design/web-vue';
+import {
+  IconDelete,
+  IconEdit,
+  IconPlus,
+  IconQuestionCircle,
+  IconRefresh,
+} from '@arco-design/web-vue/es/icon';
 
 import { message } from '#/adapter/arco';
 import { useVbenForm } from '#/adapter/form';
@@ -14,19 +26,24 @@ import { deleteSysDictApi, getSysDictListApi } from '#/api/system/sys-dict';
 import { $t } from '#/locales';
 
 import DictModalComp from './components/DictModal.vue';
-import { useSysDictListColumns, useSysDictListGridFormSchema } from './data';
+import { useSysDictListColumns } from './data';
 
 defineOptions({ name: 'SysDictList' });
 
 const emit = defineEmits(['select']);
 
 const [SearchForm, searchFormApi] = useVbenForm({
-  layout: 'horizontal',
-  schema: useSysDictListGridFormSchema(),
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'q',
+    },
+  ],
   showDefaultActions: false,
   submitOnEnter: true,
   commonConfig: {
     formItemClass: 'pb-0',
+    hideLabel: true,
   },
   handleSubmit: refreshGrid,
 });
@@ -145,7 +162,42 @@ function refreshGrid() {
       </template>
       <template #toolbar-actions>
         <div class="flex w-full">
-          <SearchForm class="flex-1" />
+          <SearchForm class="flex-1">
+            <template #q="slotProps">
+              <Input
+                v-bind="slotProps"
+                :placeholder="$t('ui.placeholder.input')"
+              >
+                <template #prefix>
+                  <Tooltip>
+                    <template #content>
+                      <div>
+                        <p>模糊匹配：标签、编码</p>
+                        <p>回车搜索</p>
+                      </div>
+                    </template>
+                    <IconQuestionCircle class="cursor-pointer" />
+                  </Tooltip>
+                </template>
+                <template #suffix>
+                  <Tooltip>
+                    <template #content>
+                      <div>重置</div>
+                    </template>
+                    <IconRefresh
+                      class="cursor-pointer"
+                      @click="
+                        () => {
+                          searchFormApi.resetForm();
+                          refreshGrid();
+                        }
+                      "
+                    />
+                  </Tooltip>
+                </template>
+              </Input>
+            </template>
+          </SearchForm>
           <div class="flex w-[70px] justify-end">
             <Tooltip
               :content="

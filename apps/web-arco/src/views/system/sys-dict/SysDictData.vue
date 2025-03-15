@@ -10,10 +10,15 @@ import { watch } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { Alert, Button } from '@arco-design/web-vue';
-import { IconPlus } from '@arco-design/web-vue/es/icon';
+import { Alert, Button, Input, Tooltip } from '@arco-design/web-vue';
+import {
+  IconPlus,
+  IconQuestionCircle,
+  IconRefresh,
+} from '@arco-design/web-vue/es/icon';
 
 import { message } from '#/adapter/arco';
+import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteSysDictDataApi,
@@ -28,6 +33,22 @@ const props = defineProps<{
   selectedDict?: SystemDictApi.SystemDict;
 }>();
 
+const [SearchForm, searchFormApi] = useVbenForm({
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'q',
+    },
+  ],
+  showDefaultActions: false,
+  submitOnEnter: true,
+  commonConfig: {
+    formItemClass: 'pb-0',
+    hideLabel: true,
+  },
+  handleSubmit: refreshGrid,
+});
+
 const [DictDataModal, modalApi] = useVbenModal({
   connectedComponent: DictDataModalComp,
 });
@@ -40,11 +61,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     rowClassName: 'h-[60px]',
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async ({ page }) => {
+          const searchFormValues = await searchFormApi.getValues();
           return await getSysDictDataListApi({
             page: page.currentPage,
             pageSize: page.pageSize,
-            ...formValues,
+            ...searchFormValues,
             ...(props.selectedDict?.id
               ? { type: props.selectedDict.type }
               : {}),
@@ -63,7 +85,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       autoHidden: true,
     },
     toolbarConfig: {
-      custom: false,
+      custom: true,
       export: false,
       refresh: { code: 'query' },
       search: false,
@@ -116,14 +138,46 @@ async function handleActionClick(
 </script>
 <template>
   <div>
-    <Grid
-      :table-title="
-        [
-          $t('system.sysDict.data.title'),
-          ...(selectedDict?.id ? [selectedDict.name] : []),
-        ].join(' - ')
-      "
-    >
+    <Grid>
+      <template #toolbar-actions>
+        <div class="flex gap-2">
+          <SearchForm>
+            <template #q="slotProps">
+              <Input
+                v-bind="slotProps"
+                :placeholder="$t('ui.placeholder.input')"
+              >
+                <template #prefix>
+                  <Tooltip>
+                    <template #content>
+                      <div>
+                        <p>模糊匹配：标签、键、值</p>
+                        <p>回车搜索</p>
+                      </div>
+                    </template>
+                    <IconQuestionCircle class="cursor-pointer" />
+                  </Tooltip>
+                </template>
+              </Input>
+            </template>
+          </SearchForm>
+          <Button
+            type="secondary"
+            @click="
+              () => {
+                searchFormApi.resetForm();
+                refreshGrid();
+              }
+            "
+            status="normal"
+          >
+            <template #icon>
+              <IconRefresh />
+            </template>
+            {{ $t('common.reset') }}
+          </Button>
+        </div>
+      </template>
       <template #toolbar-tools>
         <Button type="primary" @click="handleAdd" :disabled="!selectedDict?.id">
           <template #icon>
