@@ -8,7 +8,7 @@ import type { SystemDictDataApi } from '#/api/system/sys-dict/data';
 
 import { ref, watch } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { EllipsisText, useVbenModal } from '@vben/common-ui';
 
 import { Alert, Button, Input, Tooltip } from '@arco-design/web-vue';
 import {
@@ -208,9 +208,11 @@ const handleCopy = (value: string) => {
         </Alert>
       </template>
       <template #value="{ row }">
-        <div class="flex justify-between">
-          <div>{{ row.value }}</div>
-          <div>
+        <div class="flex w-full items-center">
+          <EllipsisText class="min-w-0 flex-1" :tooltip="false">
+            {{ row.value }}
+          </EllipsisText>
+          <div class="ml-2 flex-shrink-0">
             <Button
               type="text"
               status="normal"
