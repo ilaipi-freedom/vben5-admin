@@ -23,6 +23,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
     showDefaultActions: false,
     wrapperClass: 'grid grid-cols-1',
   },
+  gridEvents: {
+    currentChange: ({ row }: { row: SystemRoleApi.SystemRole }) => {
+      emit('select', row);
+    },
+  },
   gridOptions: {
     columns: useRoleListColumns(),
     height: 'auto',
@@ -41,10 +46,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     showHeader: false,
     rowConfig: {
       keyField: 'id',
+      isCurrent: true,
     },
     pagerConfig: {
       pageSize: 30,
       layouts: ['PrevPage', 'Number', 'NextPage'],
+      autoHidden: true,
     },
     toolbarConfig: {
       custom: false,
@@ -55,25 +62,15 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
   } as VxeTableGridOptions<SystemRoleApi.SystemRole>,
 });
-
-function handleSelect(role: SystemRoleApi.SystemRole) {
-  const roles = gridApi.grid.getFullData();
-  roles.forEach((r) => {
-    r.selected = false;
-  });
-  role.selected = true;
-  emit('select', role);
-}
 </script>
 <template>
   <Grid :table-title="$t('system.role.list')">
     <template #name="{ row }">
       <Tag
-        checkable
-        color="arcoblue"
-        :checked="row.selected"
-        :default-checked="false"
-        @check="() => handleSelect(row)"
+        :color="
+          row.id === gridApi?.grid?.getCurrentRecord()?.id ? 'arcoblue' : 'gray'
+        "
+        :checked="row.id === gridApi?.grid?.getCurrentRecord()?.id"
       >
         <div>{{ row.name }}({{ row.perm }})</div>
       </Tag>

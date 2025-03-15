@@ -16,6 +16,9 @@ const selectedRole = ref<SystemRoleApi.SystemRole>();
 const checkedCodes = ref<string[]>([]);
 
 const handleSelect = async (role: SystemRoleApi.SystemRole) => {
+  if (selectedRole.value?.id === role.id) {
+    return;
+  }
   const roleCodes = await getPermCodeByRoleApi(role.id);
   checkedCodes.value = roleCodes;
   selectedRole.value = role;
