@@ -336,7 +336,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'InputNumber',
-    fieldName: 'orderNo',
+    fieldName: 'meta.order',
     componentProps: {
       allowClear: true,
       class: 'w-full',
