@@ -61,7 +61,7 @@ export function useColumns(
     },
     {
       align: 'center',
-      field: 'orderNo',
+      field: 'meta.order',
       title: $t('system.menu.orderNo'),
       width: 80,
     },
