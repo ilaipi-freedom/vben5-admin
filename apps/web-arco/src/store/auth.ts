@@ -33,7 +33,16 @@ export const useAuthStore = defineStore('auth', () => {
     const userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { token: accessToken } = await loginApi(params);
+      const extra = {
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        timezone: Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone,
+        language: navigator.language,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+      };
+      const { token: accessToken } = await loginApi({ ...params, extra });
 
       // 如果成功获取到 accessToken
       if (accessToken) {
