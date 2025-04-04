@@ -34,7 +34,7 @@ import { LayoutTabbar } from './tabbar';
 
 defineOptions({ name: 'BasicLayout' });
 
-const emit = defineEmits<{ clearPreferencesAndLogout: [] }>();
+const emit = defineEmits<{ clearPreferencesAndLogout: []; clickLogo: [] }>();
 
 const {
   isDark,
@@ -149,6 +149,10 @@ function clearPreferencesAndLogout() {
   emit('clearPreferencesAndLogout');
 }
 
+function clickLogo() {
+  emit('clickLogo');
+}
+
 watch(
   () => preferences.app.layout,
   async (val) => {
@@ -188,6 +192,8 @@ const headerSlots = computed(() => {
     :sidebar-collapse="preferences.sidebar.collapsed"
     :sidebar-collapse-show-title="preferences.sidebar.collapsedShowTitle"
     :sidebar-enable="sidebarVisible"
+    :sidebar-collapsed-button="preferences.sidebar.collapsedButton"
+    :sidebar-fixed-button="preferences.sidebar.fixedButton"
     :sidebar-expand-on-hover="preferences.sidebar.expandOnHover"
     :sidebar-extra-collapse="preferences.sidebar.extraCollapse"
     :sidebar-hidden="preferences.sidebar.hidden"
@@ -221,6 +227,7 @@ const headerSlots = computed(() => {
         :src="preferences.logo.source"
         :text="preferences.app.name"
         :theme="showHeaderNav ? headerTheme : theme"
+        @click="clickLogo"
       />
     </template>
     <!-- 头部区域 -->
