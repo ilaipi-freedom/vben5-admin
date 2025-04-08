@@ -109,9 +109,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
     pagerConfig: {
       enabled: false,
     },
+    cellConfig: {
+      height: 50,
+    },
     rowConfig: {
       isHover: true,
-      height: 50,
     },
     proxyConfig: {
       ajax: {
