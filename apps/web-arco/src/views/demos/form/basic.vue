@@ -1,11 +1,7 @@
 <script lang="ts" setup>
-import { Page } from '@vben/common-ui';
+import { Page, useVbenDrawer } from '@vben/common-ui';
 
-import {
-  Button as AButton,
-  Card as ACard,
-  Message,
-} from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getAllMenusApi } from '#/api';
@@ -21,12 +17,19 @@ const [Form, formApi] = useVbenForm({
     },
   },
   layout: 'horizontal',
-  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
+  // wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
   handleSubmit: (values) => {
     message.success(`表单数据：${JSON.stringify(values)}`);
   },
   schema: [
     {
+      component: 'IconPicker',
+      fieldName: 'icon',
+      label: 'IconPicker',
+    },
+    {
+      // 组件需要在 #/adapter.ts内注册，并加上类型
       component: 'ApiSelect',
       componentProps: {
         afterFetch: (data: { name: string; path: string }[]) => {
@@ -133,6 +136,7 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
+const [Drawer, drawerApi] = useVbenDrawer();
 function setFormValues() {
   formApi.setValues({
     string: 'string',
@@ -150,11 +154,17 @@ function setFormValues() {
     description="表单适配器重新包装了CheckboxGroup和RadioGroup，可以通过options属性传递选项数据（选项数据将作为子组件的属性）"
     title="表单演示"
   >
-    <ACard title="基础表单">
-      <template #extra>
-        <AButton type="primary" @click="setFormValues">设置表单值</AButton>
-      </template>
+    <Drawer class="w-[600px]" title="基础表单示例">
       <Form />
-    </ACard>
+    </Drawer>
+    <ElCard>
+      <template #header>
+        <div class="flex items-center">
+          <span class="flex-auto">基础表单演示</span>
+          <ElButton type="primary" @click="setFormValues">设置表单值</ElButton>
+        </div>
+      </template>
+      <ElButton type="primary" @click="drawerApi.open"> 打开抽屉 </ElButton>
+    </ElCard>
   </Page>
 </template>
