@@ -17,8 +17,10 @@ export namespace SystemDictDataApi {
   }
 
   export interface DictDataQuery extends BasePageQuery {
+    type?: string;
     q?: string;
     status?: AvailableStatusEnum;
+    key?: string;
   }
 }
 
