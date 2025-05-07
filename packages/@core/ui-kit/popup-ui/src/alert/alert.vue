@@ -47,6 +47,10 @@ function onAlertClosed() {
   isConfirm.value = false;
 }
 
+function onEscapeKeyDown() {
+  isConfirm.value = false;
+}
+
 const getIconRender = computed(() => {
   let iconRender: Component | null = null;
   if (props.icon) {
@@ -91,14 +95,13 @@ const getIconRender = computed(() => {
 });
 
 function doCancel() {
-  isConfirm.value = false;
+  handleCancel();
   handleOpenChange(false);
 }
 
 function doConfirm() {
-  isConfirm.value = true;
+  handleConfirm();
   handleOpenChange(false);
-  emits('confirm');
 }
 
 provideAlertContext({
@@ -117,7 +120,7 @@ function handleCancel() {
 
 const loading = ref(false);
 async function handleOpenChange(val: boolean) {
-  await nextTick();
+  await nextTick(); // 等待标记isConfirm状态
   if (!val && props.beforeClose) {
     loading.value = true;
     try {
@@ -141,6 +144,7 @@ async function handleOpenChange(val: boolean) {
       :overlay-blur="overlayBlur"
       @opened="emits('opened')"
       @closed="onAlertClosed"
+      @escape-key-down="onEscapeKeyDown"
       :class="
         cn(
           containerClass,
