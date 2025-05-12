@@ -27,6 +27,10 @@ interface TabbarState {
    */
   excludeCachedTabs: Set<string>;
   /**
+   * @zh_CN 标签右键菜单列表
+   */
+  menuList: string[];
+  /**
    * @zh_CN 是否刷新
    */
   renderRouteView?: boolean;
@@ -330,7 +334,13 @@ export const useTabbarStore = defineStore('core-tabbar', {
     /**
      * 刷新标签页
      */
-    async refresh(router: Router) {
+    async refresh(router: Router | string) {
+      // 如果是Router路由，那么就根据当前路由刷新
+      // 如果是string字符串，为路由名称，则定向刷新指定标签页，不能是当前路由名称，否则不会刷新
+      if (typeof router === 'string') {
+        return await this.refreshByName(router);
+      }
+
       const { currentRoute } = router;
       const { name } = currentRoute.value;
 
@@ -343,6 +353,15 @@ export const useTabbarStore = defineStore('core-tabbar', {
       this.excludeCachedTabs.delete(name as string);
       this.renderRouteView = true;
       stopProgress();
+    },
+
+    /**
+     * 根据路由名称刷新指定标签页
+     */
+    async refreshByName(name: string) {
+      this.excludeCachedTabs.add(name);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      this.excludeCachedTabs.delete(name);
     },
 
     /**
@@ -373,6 +392,14 @@ export const useTabbarStore = defineStore('core-tabbar', {
     },
 
     /**
+     * @zh_CN 更新菜单列表
+     * @param list
+     */
+    setMenuList(list: string[]) {
+      this.menuList = list;
+    },
+
+    /**
      * @zh_CN 设置标签页标题
      * @param tab
      * @param title
@@ -388,7 +415,6 @@ export const useTabbarStore = defineStore('core-tabbar', {
         await this.updateCacheTabs();
       }
     },
-
     setUpdateTime() {
       this.updateTime = Date.now();
     },
@@ -406,6 +432,7 @@ export const useTabbarStore = defineStore('core-tabbar', {
       this.tabs.splice(newIndex, 0, currentTab);
       this.dragEndIndex = this.dragEndIndex + 1;
     },
+
     /**
      * @zh_CN 切换固定标签页
      * @param tab
@@ -439,7 +466,6 @@ export const useTabbarStore = defineStore('core-tabbar', {
       // 交换位置重新排序
       await this.sortTabs(index, newIndex);
     },
-
     /**
      * 根据当前打开的选项卡更新缓存
      */
@@ -480,6 +506,9 @@ export const useTabbarStore = defineStore('core-tabbar', {
     getExcludeCachedTabs(): string[] {
       return [...this.excludeCachedTabs];
     },
+    getMenuList(): string[] {
+      return this.menuList;
+    },
     getTabs(): TabDefinition[] {
       const normalTabs = this.tabs.filter((tab) => !isAffixTab(tab));
       return [...this.affixTabs, ...normalTabs].filter(Boolean);
@@ -496,6 +525,17 @@ export const useTabbarStore = defineStore('core-tabbar', {
     cachedTabs: new Set(),
     dragEndIndex: 0,
     excludeCachedTabs: new Set(),
+    menuList: [
+      'close',
+      'affix',
+      'maximize',
+      'reload',
+      'open-in-new-window',
+      'close-left',
+      'close-right',
+      'close-other',
+      'close-all',
+    ],
     renderRouteView: true,
     tabs: [],
     updateTime: Date.now(),

@@ -3,7 +3,8 @@ import type { Recordable, UserInfo } from '@vben/types';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@vben/constants';
+import { LOGIN_PATH } from '@vben/constants';
+import { preferences } from '@vben/preferences';
 import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
@@ -33,7 +34,16 @@ export const useAuthStore = defineStore('auth', () => {
     const userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { token: accessToken } = await loginApi(params);
+      const extra = {
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        timezone: Intl?.DateTimeFormat?.()?.resolvedOptions?.()?.timeZone,
+        language: navigator.language,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+      };
+      const { token: accessToken } = await loginApi({ ...params, extra });
 
       // 如果成功获取到 accessToken
       if (accessToken) {
@@ -53,7 +63,9 @@ export const useAuthStore = defineStore('auth', () => {
         }
         onSuccess
           ? await onSuccess()
-          : await router.push(userInfo.homePath || DEFAULT_HOME_PATH);
+          : await router.push(
+              userInfo.homePath || preferences.app.defaultHomePath,
+            );
 
         if (userInfo?.realName) {
           notification.success({

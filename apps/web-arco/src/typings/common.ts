@@ -14,6 +14,7 @@ export type ListItemsTotalType<T> = {
 };
 
 export type BasePageQuery = {
+  isAll?: boolean;
   page?: number;
   pageSize?: number;
 };

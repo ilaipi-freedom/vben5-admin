@@ -53,6 +53,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
       isHover: true,
       height: 50,
     },
+    cellConfig: {
+      height: 50,
+    },
 
     toolbarConfig: {
       custom: true,

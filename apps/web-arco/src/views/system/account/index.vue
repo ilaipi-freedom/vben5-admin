@@ -64,9 +64,11 @@ const gridOptions: VxeGridProps = {
       width: 230,
     },
   ],
+  cellConfig: {
+    height: 50,
+  },
   rowConfig: {
     isHover: true,
-    height: 50,
   },
   toolbarConfig: {
     refresh: false,

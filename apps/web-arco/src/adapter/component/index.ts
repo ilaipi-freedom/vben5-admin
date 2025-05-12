@@ -41,10 +41,11 @@ import {
 const withDefaultPlaceholder = <T extends Component>(
   component: T,
   type: 'input' | 'select',
+  componentProps: Recordable<any> = {},
 ) => {
   return defineComponent({
-    inheritAttrs: false,
     name: component.name,
+    inheritAttrs: false,
     setup: (props: any, { attrs, expose, slots }) => {
       const placeholder =
         props?.placeholder ||
@@ -63,7 +64,11 @@ const withDefaultPlaceholder = <T extends Component>(
         }
       });
       return () =>
-        h(component, { ...props, ...attrs, placeholder, ref: innerRef }, slots);
+        h(
+          component,
+          { ...componentProps, placeholder, ...props, ...attrs, ref: innerRef },
+          slots,
+        );
     },
   });
 };
@@ -102,48 +107,34 @@ async function initComponentAdapter() {
     // 如果你的组件体积比较大，可以使用异步加载
     // Button: () =>
     // import('xxx').then((res) => res.Button),
-
-    ApiSelect: (props, { attrs, slots }) => {
-      return h(
-        ApiComponent,
-        {
-          placeholder: $t('ui.placeholder.select'),
-          ...props,
-          ...attrs,
-          component: Select,
-          loadingSlot: 'suffixIcon',
-          modelPropName: 'modelValue',
-          visibleEvent: 'onPopupVisibleChange',
-          optionsPropName: 'options',
-          fieldNames: {
-            label: 'label',
-            value: 'value',
-          },
-        },
-        slots,
-      );
-    },
-    ApiTreeSelect: (props, { attrs, slots }) => {
-      return h(
-        ApiComponent,
-        {
-          placeholder: $t('ui.placeholder.select'),
-          ...props,
-          ...attrs,
-          fieldNames: {
-            title: 'label',
-            key: 'value',
-            children: 'children',
-          },
-          component: TreeSelect,
-          loadingSlot: 'suffixIcon',
-          modelPropName: 'modelValue',
-          visibleEvent: 'onPopupVisibleChange',
-          optionsPropName: 'data',
-        },
-        slots,
-      );
-    },
+    ApiSelect: withDefaultPlaceholder(
+      {
+        ...ApiComponent,
+        name: 'ApiSelect',
+      },
+      'select',
+      {
+        component: Select,
+        loadingSlot: 'suffixIcon',
+        visibleEvent: 'onPopupVisibleChange',
+        modelPropName: 'modelValue',
+      },
+    ),
+    ApiTreeSelect: withDefaultPlaceholder(
+      {
+        ...ApiComponent,
+        name: 'ApiTreeSelect',
+      },
+      'select',
+      {
+        component: TreeSelect,
+        fieldNames: { title: 'label', key: 'value', children: 'children' },
+        loadingSlot: 'suffixIcon',
+        modelPropName: 'modelValue',
+        optionsPropName: 'data',
+        visibleEvent: 'onPopupVisibleChange',
+      },
+    ),
     AutoComplete,
     Checkbox,
     CheckboxGroup,
@@ -153,19 +144,11 @@ async function initComponentAdapter() {
       return h(Button, { ...props, attrs, type: 'secondary' }, slots);
     },
     Divider,
-    IconPicker: (props, { attrs, slots }) => {
-      return h(
-        IconPicker,
-        {
-          iconSlot: 'append',
-          inputComponent: Input,
-          modelValueProp: 'modelValue',
-          ...props,
-          ...attrs,
-        },
-        slots,
-      );
-    },
+    IconPicker: withDefaultPlaceholder(IconPicker, 'select', {
+      iconSlot: 'append',
+      inputComponent: Input,
+      modelValueProp: 'modelValue',
+    }),
     Input: withDefaultPlaceholder(Input, 'input'),
     InputNumber: withDefaultPlaceholder(InputNumber, 'input'),
     InputPassword: withDefaultPlaceholder(InputPassword, 'input'),
