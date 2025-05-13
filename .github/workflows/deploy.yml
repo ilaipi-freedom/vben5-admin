@@ -3,12 +3,13 @@ name: Website Routes CI
 on:
   workflow_dispatch:
   push:
+    branches: [ "main" ]
     tags:
       - 'release-*/v*'
 
 env:
-  DOCKER_IMAGE_NAME: vben5-admin
-  COMPOSE_SERVICE_NAME: vben5-admin
+  DOCKER_IMAGE_NAME: ilaipi-admin-frontend-starter
+  COMPOSE_SERVICE_NAME: starter_admin_front
 
 jobs:
   ci:
@@ -79,7 +80,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            suffix: linghang
+            suffix: pve
 
     steps:
       - name: Load environment variables
@@ -92,6 +93,14 @@ jobs:
         uses: ilaipi-freedom/process-ssh-connection-action@latest
         with:
           suffix: ${{ matrix.suffix }}
+      
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        if: ${{ matrix.tailscale }}
+        with:
+          oauth-client-id: ${{ env.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ env.TS_OAUTH_SECRET }}
+          tags: tag:ci
 
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@v1.0.0
@@ -104,7 +113,7 @@ jobs:
           script: |
             echo -n "${{ env.DOCKER_HUB_TOKEN }}" | docker login -u ${{ env.DOCKER_HUB_USERNAME }} --password-stdin ${{ env.DOCKER_REGISTRY }}
 
-            cd ~/deploy/vben5-admin
+            cd ~/deploy/starter
             docker compose pull ${{ env.COMPOSE_SERVICE_NAME }}
 
             docker compose up -d
