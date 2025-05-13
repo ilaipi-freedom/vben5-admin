@@ -1,172 +1,110 @@
-name: Deploy Website on push
+name: Website Routes CI
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    tags:
+      - 'release-*/v*'
+
+env:
+  DOCKER_IMAGE_NAME: vben5-admin
+  COMPOSE_SERVICE_NAME: vben5-admin
 
 jobs:
-  deploy-playground-ftp:
-    name: Deploy Push Playground Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'vbenjs/vue-vben-admin'
-    runs-on: ubuntu-latest
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
     steps:
-      - name: Checkout code
+      - name: Load environment variables
+        uses: ilaipi-freedom/load-env-action@latest
+        with:
+          env_content: ${{ secrets.ENV }}
+      - name: Checkout 🛎
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Sed Config Base
-        shell: bash
-        run: |
-          sed -i  "s#VITE_COMPRESS\s*=.*#VITE_COMPRESS = gzip#g" ./playground/.env.production
-          sed -i  "s#VITE_PWA\s*=.*#VITE_PWA = true#g" ./playground/.env.production
-          cat ./playground/.env.production
+      - name: Setup node env 🏗
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          check-latest: true
 
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
+      - name: Setup pnpm 📦
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ./package.json
+
+      - name: Install dependencies 📦
+        run: pnpm install
 
       - name: Build
-        run: pnpm build:play
+        run: pnpm run build
 
-      - name: Sync Playground files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Login to Private Registry
+        uses: docker/login-action@v3
         with:
-          server: ${{ secrets.PRO_FTP_HOST }}
-          username: ${{ secrets.WEB_PLAYGROUND_FTP_ACCOUNT }}
-          password: ${{ secrets.WEB_PLAYGROUND_FTP_PWSSWORD }}
-          local-dir: ./playground/dist/
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ env.DOCKER_HUB_USERNAME }}
+          password: ${{ env.DOCKER_HUB_TOKEN }}
 
-  deploy-docs-ftp:
-    name: Deploy Push Docs Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'vbenjs/vue-vben-admin'
-    runs-on: ubuntu-latest
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5.6.1
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_HUB_SPACE }}/${{ env.DOCKER_IMAGE_NAME }}
+          tags: |
+            # 如果是 main 分支提交，使用当前时间和 latest 标签
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value={{date 'YYYYMMDD-HHmm' tz='+08:00'}},enable=${{ github.ref == 'refs/heads/main' }}
+            # 如果是 tag 提交，使用默认标签策略
+            type=ref,event=tag
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+  release:
+    runs-on: ${{ matrix.os }}
+    needs: ci
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            suffix: linghang
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Load environment variables
+        uses: ilaipi-freedom/load-env-action@latest
         with:
-          fetch-depth: 0
+          env_content: ${{ secrets.ENV }}
 
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
-
-      - name: Build
-        run: pnpm build:docs
-
-      - name: Sync Docs files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Process SSH Connection
+        id: ssh_connection
+        uses: ilaipi-freedom/process-ssh-connection-action@latest
         with:
-          server: ${{ secrets.PRO_FTP_HOST }}
-          username: ${{ secrets.WEBSITE_FTP_ACCOUNT }}
-          password: ${{ secrets.WEBSITE_FTP_PASSWORD }}
-          local-dir: ./docs/.vitepress/dist/
+          suffix: ${{ matrix.suffix }}
 
-  deploy-antd-ftp:
-    name: Deploy Push Antd Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'vbenjs/vue-vben-admin'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          fetch-depth: 0
+          host: ${{ steps.ssh_connection.outputs.host }}
+          username: ${{ steps.ssh_connection.outputs.username }}
+          key: ${{ steps.ssh_connection.outputs.key }}
+          port: ${{ steps.ssh_connection.outputs.port }}
+          allenvs: true
+          script: |
+            echo -n "${{ env.DOCKER_HUB_TOKEN }}" | docker login -u ${{ env.DOCKER_HUB_USERNAME }} --password-stdin ${{ env.DOCKER_REGISTRY }}
 
-      - name: Sed Config Base
-        shell: bash
-        run: |
-          sed -i  "s#VITE_COMPRESS\s*=.*#VITE_COMPRESS = gzip#g" ./apps/web-antd/.env.production
-          sed -i  "s#VITE_PWA\s*=.*#VITE_PWA = true#g" ./apps/web-antd/.env.production
-          cat ./apps/web-antd/.env.production
+            cd ~/deploy/vben5-admin
+            docker compose pull ${{ env.COMPOSE_SERVICE_NAME }}
 
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
-
-      - name: Build
-        run: pnpm run build:antd
-
-      - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.PRO_FTP_HOST }}
-          username: ${{ secrets.WEB_ANTD_FTP_ACCOUNT }}
-          password: ${{ secrets.WEB_ANTD_FTP_PASSWORD }}
-          local-dir: ./apps/web-antd/dist/
-
-  deploy-ele-ftp:
-    name: Deploy Push Element Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'vbenjs/vue-vben-admin'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Sed Config Base
-        shell: bash
-        run: |
-          sed -i  "s#VITE_COMPRESS\s*=.*#VITE_COMPRESS = gzip#g" ./apps/web-ele/.env.production
-          sed -i  "s#VITE_PWA\s*=.*#VITE_PWA = true#g" ./apps/web-ele/.env.production
-          cat ./apps/web-ele/.env.production
-
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
-
-      - name: Build
-        run: pnpm run build:ele
-
-      - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.PRO_FTP_HOST }}
-          username: ${{ secrets.WEB_ELE_FTP_ACCOUNT }}
-          password: ${{ secrets.WEB_ELE_FTP_PASSWORD }}
-          local-dir: ./apps/web-ele/dist/
-
-  deploy-naive-ftp:
-    name: Deploy Push Naive Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'vbenjs/vue-vben-admin'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Sed Config Base
-        shell: bash
-        run: |
-          sed -i  "s#VITE_COMPRESS\s*=.*#VITE_COMPRESS = gzip#g" ./apps/web-naive/.env.production
-          sed -i  "s#VITE_PWA\s*=.*#VITE_PWA = true#g" ./apps/web-naive/.env.production
-          cat ./apps/web-naive/.env.production
-
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
-
-      - name: Build
-        run: pnpm run build:naive
-
-      - name: Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.PRO_FTP_HOST }}
-          username: ${{ secrets.WEB_NAIVE_FTP_ACCOUNT }}
-          password: ${{ secrets.WEB_NAIVE_FTP_PASSWORD }}
-          local-dir: ./apps/web-naive/dist/
-
-  rerun-on-failure:
-    name: Rerun on failure
-    needs:
-      - deploy-playground-ftp
-      - deploy-docs-ftp
-      - deploy-antd-ftp
-      - deploy-ele-ftp
-      - deploy-naive-ftp
-    if: failure() && fromJSON(github.run_attempt) < 10
-    runs-on: ubuntu-latest
-    steps:
-      - name: Retry ${{ fromJSON(github.run_attempt) }} of 10
-        env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run rerun.yml -F run_id=${{ github.run_id }}
+            docker compose up -d
