@@ -30,7 +30,6 @@
     "build:arco": "pnpm run build --filter=@vben/web-arco",
     "build:docker": "./scripts/deploy/build-local-docker-image.sh",
     "build:docs": "pnpm run build --filter=@vben/docs",
-    "build:play": "pnpm run build --filter=@vben/playground",
     "changeset": "pnpm exec changeset",
     "check": "pnpm run check:circular && pnpm run check:dep && pnpm run check:type && pnpm check:cspell",
     "check:circular": "vsh check-circular",
@@ -41,8 +40,6 @@
     "commit": "czg",
     "dev": "turbo-run dev",
     "dev:arco": "pnpm -F @vben/web-arco run dev",
-    "dev:docs": "pnpm -F @vben/docs run dev",
-    "dev:play": "pnpm -F @vben/playground run dev",
     "format": "vsh lint --format",
     "lint": "vsh lint",
     "postinstall": "pnpm -r run stub --if-present",
@@ -92,9 +89,9 @@
   },
   "engines": {
     "node": ">=22.14.0",
-    "pnpm": ">=10.4.1"
+    "pnpm": ">=10.10.0"
   },
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.10.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowedVersions": {

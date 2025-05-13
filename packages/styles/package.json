@@ -24,9 +24,6 @@
     "./naive": {
       "default": "./src/naive/index.css"
     },
-    "./arco": {
-      "default": "./src/arco/index.css"
-    },
     "./global": {
       "default": "./src/global/index.scss"
     }

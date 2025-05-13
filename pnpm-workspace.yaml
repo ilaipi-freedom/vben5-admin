@@ -13,7 +13,6 @@ packages:
   - docs
   - playground
 catalog:
-  '@arco-design/web-vue': ^2.56.3
   '@ast-grep/napi': ^0.37.0
   '@changesets/changelog-github': ^0.5.1
   '@changesets/cli': ^2.29.2
