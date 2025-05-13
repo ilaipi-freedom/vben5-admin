@@ -58,7 +58,7 @@ const hasChildren = computed(() => {
         :badge="menu.badge"
         :badge-type="menu.badgeType"
         :badge-variants="menu.badgeVariants"
-        class="right-8"
+        class="right-6"
       />
     </template>
     <template #title>
