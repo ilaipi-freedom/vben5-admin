@@ -14,6 +14,7 @@ export const overridesPreferences = defineOverridesPreferences({
     name: import.meta.env.VITE_APP_TITLE,
     enableRefreshToken: false,
     accessMode: import.meta.env.VITE_APP_ACCESS_MODE,
+    defaultHomePath: '/workplace',
   },
   footer: {
     enable: false,
