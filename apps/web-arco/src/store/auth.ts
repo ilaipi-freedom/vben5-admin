@@ -63,7 +63,6 @@ export const useAuthStore = defineStore('auth', () => {
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
         }
-        console.warn('userInfo', userInfo, preferences.app.defaultHomePath);
         onSuccess
           ? await onSuccess()
           : await router.push(
