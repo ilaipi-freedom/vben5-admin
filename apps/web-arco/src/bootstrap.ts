@@ -5,7 +5,6 @@ import { registerLoadingDirective } from '@vben/common-ui';
 import { preferences } from '@vben/preferences';
 import { initStores } from '@vben/stores';
 import '@vben/styles';
-import '@vben/styles/arco';
 
 import { useTitle } from '@vueuse/core';
 
@@ -14,6 +13,8 @@ import { $t, setupI18n } from '#/locales';
 
 import { initComponentAdapter } from './adapter/component';
 import { router } from './router';
+
+import './styles/global.css';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器

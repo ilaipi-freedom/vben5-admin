@@ -1,3 +1,5 @@
+import type { UserInfo } from '@vben/types';
+
 export enum AvailableStatusEnum {
   Forbidden = 'forbidden',
   Normal = 'normal',
@@ -18,3 +20,15 @@ export type BasePageQuery = {
   page?: number;
   pageSize?: number;
 };
+
+interface BaseUserInfo extends UserInfo {
+  name: string;
+  role: {
+    id: string;
+    name: string;
+    perm: string;
+    route: string;
+  };
+}
+
+export type { BaseUserInfo };

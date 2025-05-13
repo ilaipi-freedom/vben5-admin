@@ -1,4 +1,6 @@
-import type { Recordable, UserInfo } from '@vben/types';
+import type { Recordable } from '@vben/types';
+
+import type { BaseUserInfo } from '#/typings/common';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -31,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     onSuccess?: () => Promise<void> | void,
   ) {
     // 异步处理用户登录操作并获取 accessToken
-    const userInfo: null | UserInfo = null;
+    const userInfo: BaseUserInfo | null = null;
     try {
       loginLoading.value = true;
       const extra = {
@@ -111,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
       getUserInfoApi(),
       getPermBtnCodesApi(),
     ]);
-    const userInfo: null | UserInfo = fetchUserInfoResult;
+    const userInfo: BaseUserInfo | null = fetchUserInfoResult;
     userInfo.realName = userInfo?.realName || userInfo?.name || '';
     userStore.setUserInfo(userInfo);
     accessStore.setAccessCodes(accessCodes);
