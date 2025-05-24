@@ -95,7 +95,7 @@ jobs:
           suffix: ${{ matrix.suffix }}
       
       - name: Tailscale
-        uses: tailscale/github-action@v2
+        uses: tailscale/github-action@v3
         if: ${{ matrix.tailscale }}
         with:
           oauth-client-id: ${{ env.TS_OAUTH_CLIENT_ID }}
