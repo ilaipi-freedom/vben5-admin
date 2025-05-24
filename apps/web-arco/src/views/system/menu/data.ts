@@ -12,6 +12,8 @@ export function getMenuTypeOptions() {
       value: 'catalog',
       bordered: true,
     },
+    { color: 'default', label: $t('system.menu.typeMenu'), value: 'menu' },
+    { color: 'error', label: $t('system.menu.typeButton'), value: 'button' },
     {
       color: 'lime',
       label: $t('system.menu.typeMenu'),
