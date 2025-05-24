@@ -56,7 +56,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5.6.1
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_HUB_SPACE }}/${{ env.DOCKER_IMAGE_NAME }}
           tags: |
@@ -67,7 +67,7 @@ jobs:
             type=ref,event=tag
 
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
@@ -95,7 +95,7 @@ jobs:
           suffix: ${{ matrix.suffix }}
       
       - name: Tailscale
-        uses: tailscale/github-action@v2
+        uses: tailscale/github-action@v3
         if: ${{ matrix.tailscale }}
         with:
           oauth-client-id: ${{ env.TS_OAUTH_CLIENT_ID }}
@@ -103,7 +103,7 @@ jobs:
           tags: tag:ci
 
       - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ steps.ssh_connection.outputs.host }}
           username: ${{ steps.ssh_connection.outputs.username }}
