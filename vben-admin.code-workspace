@@ -1,10 +1,6 @@
 {
   "folders": [
     {
-      "name": "@vben/backend-mock",
-      "path": "apps/backend-mock",
-    },
-    {
       "name": "@vben/web-arco",
       "path": "apps/web-arco",
     },
@@ -147,10 +143,6 @@
     {
       "name": "@vben/utils",
       "path": "packages/utils",
-    },
-    {
-      "name": "@vben/playground",
-      "path": "playground",
     },
     {
       "name": "@vben/turbo-run",
