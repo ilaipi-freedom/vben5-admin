@@ -77,8 +77,6 @@ export const useAuthStore = defineStore('auth', () => {
           });
         }
       }
-    } catch (error) {
-      console.error('login api response error', error);
     } finally {
       loginLoading.value = false;
     }
