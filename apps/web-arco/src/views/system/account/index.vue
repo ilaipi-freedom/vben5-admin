@@ -195,7 +195,7 @@ onMounted(() => {
     <AccountModal :role-list="roleList" @success="gridApi.reload" />
     <ResetPasswordModal @success="gridApi.reload" />
 
-    <Grid class="h-full">
+    <Grid>
       <template #status="{ row }">
         <Switch
           :loading="row.statusLoading"
