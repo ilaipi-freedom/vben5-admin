@@ -17,8 +17,11 @@ export const overridesPreferences = defineOverridesPreferences({
     defaultHomePath: '/workplace',
   },
   footer: {
-    enable: false,
-    fixed: true,
+    enable: true,
+    fixed: false,
+  },
+  theme: {
+    mode: 'light',
   },
   copyright: {
     companyName: import.meta.env.VITE_APP_COPYRIGHT_COMPANY_NAME || 'vben',
@@ -29,5 +32,9 @@ export const overridesPreferences = defineOverridesPreferences({
     enable: true,
     icp: import.meta.env.VITE_APP_COPYRIGHT_ICP,
     icpLink: import.meta.env.VITE_APP_COPYRIGHT_ICP_LINK,
+  },
+  widget: {
+    notification: false,
+    globalSearch: false,
   },
 });

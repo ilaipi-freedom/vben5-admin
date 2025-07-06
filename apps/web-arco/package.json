@@ -1,6 +1,6 @@
 {
   "name": "@vben/web-arco",
-  "version": "5.5.6",
+  "version": "5.5.7",
   "homepage": "https://vben.pro",
   "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
@@ -45,15 +45,15 @@
     "@vben/utils": "workspace:*",
     "@vueuse/core": "catalog:",
     "dayjs": "catalog:",
-    "lodash-es": "^4.17.21",
     "json-bigint": "catalog:",
+    "lodash-es": "^4.17.21",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-i18n": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.12",
-    "@types/json-bigint": "catalog:"
+    "@types/json-bigint": "catalog:",
+    "@types/lodash-es": "^4.17.12"
   }
 }
